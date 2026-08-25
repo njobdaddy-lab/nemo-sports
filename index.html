@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
 <meta name="theme-color" content="#10131d" />
-<title>네모 운동회 0.4</title>
+<title>네모 운동회 0.4.1</title>
 <link rel="stylesheet" href="./style.css" />
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
 </head>
@@ -12,14 +12,14 @@
 <main id="app">
 <header class="topbar"><div><p class="eyebrow">세상의 모든 네모가 모였다</p><h1>네모 운동회</h1></div><button id="soundBtn" class="icon-btn">🔊</button></header>
 <section id="homeScreen">
-  <div class="hero"><div><span class="badge">GAME ENGINE 0.4</span><h2>이제 버튼 테스트 말고,<br>진짜 경기.</h2><p>달리고, 삐끗하고, 구름판을 밟고, 날아가서 모래에 박힌다.</p></div><div class="hero-nemo">◼️</div></div>
+  <div class="hero"><div><span class="badge">PLAYTEST 0.4.1</span><h2>눈으로 보이고,<br>손으로 움직이는 경기.</h2><p>달리기는 확실히 전진하고, 멀리뛰기는 화면 안에서 도움닫기부터 착지까지 전부 보인다.</p></div><div class="hero-nemo">◼️</div></div>
   <h3 class="section-title">AI 난이도</h3><div id="difficultyGrid" class="difficulty-grid"></div>
   <h3 class="section-title">내 네모</h3><div id="charGrid" class="char-grid"></div>
   <h3 class="section-title">종목</h3>
   <div class="event-grid">
-    <button class="event" data-event="sprint"><span class="ico">🏃</span><strong>50m 네모 달리기 <em>ENGINE</em></strong><small>4명이 실제 트랙에서 동시에 달림</small></button>
-    <button class="event featured" data-event="jump"><span class="ico">🪽</span><strong>멀리뛰기 <em>NEW</em></strong><small>도움닫기 → 구름판 → 비행 → 모래 착지</small></button>
-    <button class="event" data-event="reaction"><span class="ico">⚡</span><strong>스타트 대결 <em>ENGINE</em></strong><small>총소리 전에 누르면 부정출발</small></button>
+    <button class="event" data-event="sprint"><span class="ico">🏃</span><strong>50m 네모 달리기 <em>FIXED</em></strong><small>왼발·오른발로 캐릭터가 실제로 전진</small></button>
+    <button class="event featured" data-event="jump"><span class="ico">🪽</span><strong>멀리뛰기 <em>FIXED</em></strong><small>도움닫기 → 구름판 → 비행 → 모래 착지</small></button>
+    <button class="event" data-event="reaction"><span class="ico">🚦</span><strong>스타트 대결 <em>REWORK</em></strong><small>빨간불엔 대기, 초록불에 큰 버튼 탭</small></button>
   </div>
   <button id="randomBtn" class="primary">🎲 랜덤 경기</button>
 </section>
