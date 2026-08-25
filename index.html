@@ -3,33 +3,56 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
-<meta name="theme-color" content="#10131d" />
-<title>네모 운동회 0.4.1</title>
-<link rel="stylesheet" href="./style.css?v=041" />
+<meta name="theme-color" content="#0b1020" />
+<title>네모 운동회 0.5</title>
+<link rel="stylesheet" href="./style.css?v=050" />
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
 </head>
 <body>
 <main id="app">
-<header class="topbar"><div><p class="eyebrow">세상의 모든 네모가 모였다</p><h1>네모 운동회</h1></div><button id="soundBtn" class="icon-btn">🔊</button></header>
-<section id="homeScreen">
-  <div class="hero"><div><span class="badge">PLAYTEST 0.4.1</span><h2>눈으로 보이고,<br>손으로 움직이는 경기.</h2><p>달리기는 확실히 전진하고, 멀리뛰기는 화면 안에서 도움닫기부터 착지까지 전부 보인다.</p></div><div class="hero-nemo">◼️</div></div>
-  <h3 class="section-title">AI 난이도</h3><div id="difficultyGrid" class="difficulty-grid"></div>
-  <h3 class="section-title">내 네모</h3><div id="charGrid" class="char-grid"></div>
-  <h3 class="section-title">종목</h3>
-  <div class="event-grid">
-    <button class="event" data-event="sprint"><span class="ico">🏃</span><strong>50m 네모 달리기 <em>FIXED</em></strong><small>왼발·오른발로 캐릭터가 실제로 전진</small></button>
-    <button class="event featured" data-event="jump"><span class="ico">🪽</span><strong>멀리뛰기 <em>FIXED</em></strong><small>도움닫기 → 구름판 → 비행 → 모래 착지</small></button>
-    <button class="event" data-event="reaction"><span class="ico">🚦</span><strong>스타트 대결 <em>REWORK</em></strong><small>빨간불엔 대기, 초록불에 큰 버튼 탭</small></button>
-  </div>
-  <button id="randomBtn" class="primary">🎲 랜덤 경기</button>
-</section>
-<section id="gameScreen">
-  <div class="game-head"><button id="backBtn" class="ghost">← 나가기</button><div><p id="roundLabel" class="eyebrow"></p><h2 id="gameTitle"></h2></div><div id="timer" class="timer">READY</div></div>
-  <div class="game-shell"><div id="phaserMount" class="phaser-wrap"></div><div class="hud"><div class="hud-card"><span id="hudLabel">COMBO</span><br><strong id="hudMain">0</strong></div><div class="hud-card"><span id="hudRightLabel">SPEED</span><br><strong id="hudRight">0%</strong><div class="speedbar"><i id="hudBar"></i></div></div></div><div id="gameCall" class="game-call"></div></div>
-  <div id="controls" class="controls"></div><p id="hint" class="hint"></p>
-</section>
+  <section id="homeScreen" class="home-screen">
+    <header class="home-head">
+      <div><p class="eyebrow">세상의 모든 네모가 선수라면?</p><h1>네모 운동회</h1></div>
+      <button id="soundBtn" class="icon-btn">🔊</button>
+    </header>
+    <div class="hero">
+      <div><span class="badge">PLAYTEST 0.5</span><h2>웹페이지 느낌은 줄이고,<br>경기장을 크게.</h2><p>선택은 짧게, 플레이는 크게. 세 종목 모두 화면 안에서 실제로 움직인다.</p></div>
+      <div class="hero-cube">•ᴗ•</div>
+    </div>
+    <h3>AI 난이도</h3><div id="difficultyGrid" class="difficulty-grid"></div>
+    <h3>내 네모</h3><div id="charGrid" class="char-grid"></div>
+    <h3>경기 선택</h3>
+    <div class="event-grid">
+      <button class="event" data-event="sprint"><span>🏃</span><b>50m 달리기</b><small>좌·우 발 리듬으로 결승까지</small></button>
+      <button class="event featured" data-event="jump"><span>🪽</span><b>멀리뛰기</b><small>도움닫기 → 구름판 → 착지</small></button>
+      <button class="event" data-event="reaction"><span>🚦</span><b>출발 반응 레이스</b><small>초록불에 출발! 4명이 같이 뛴다</small></button>
+    </div>
+  </section>
+  <section id="gameScreen" class="game-screen" hidden>
+    <div class="game-top">
+      <button id="backBtn" class="back-btn">←</button>
+      <div class="game-title-wrap"><small id="roundLabel">AI 보통</small><strong id="gameTitle">50m 달리기</strong></div>
+      <div id="timer" class="timer">READY</div>
+    </div>
+    <div class="game-stage">
+      <div id="phaserMount"></div>
+      <div id="overlayMessage" class="overlay-message"></div>
+      <div class="hud">
+        <div><span id="hudLeftLabel">COMBO</span><b id="hudLeft">0</b></div>
+        <div class="hud-speed"><span id="hudRightLabel">SPEED</span><b id="hudRight">0%</b><i><em id="hudBar"></em></i></div>
+      </div>
+    </div>
+    <div id="controls" class="controls"></div>
+    <p id="hint" class="hint"></p>
+  </section>
 </main>
-<div id="resultPanel"><div class="result-card winner"><p class="eyebrow">경기 종료</p><h2 id="resultTitle"></h2><div id="recordBig" class="record-big"></div><div id="resultList" class="result-list"></div><div class="result-actions"><button id="retryBtn" class="primary">한 판 더</button><button id="homeBtn" class="secondary">종목 고르기</button></div></div></div>
-<script src="./app.js?v=041"></script>
+<div id="resultPanel" class="result-panel" hidden>
+  <div class="result-card">
+    <small>경기 종료</small><h2 id="resultTitle"></h2><div id="recordBig" class="record-big"></div>
+    <div id="resultList" class="result-list"></div>
+    <div class="result-actions"><button id="retryBtn" class="primary">한 판 더</button><button id="homeBtn" class="secondary">다른 경기</button></div>
+  </div>
+</div>
+<script src="./app.js?v=050"></script>
 </body>
 </html>
