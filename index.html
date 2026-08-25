@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#171923" />
-  <title>네모 운동회 MVP</title>
+  <title>네모 운동회 0.3</title>
   <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
@@ -15,7 +15,7 @@
     </header>
     <section id="homeScreen" class="screen active">
       <div class="hero-card">
-        <div class="hero-copy"><span class="badge">MVP 0.2</span><h2>발 꼬이면 끝이다.</h2><p>왼발·오른발 리듬을 타고 달려. AI도 이제 실수하고, 난이도에 따라 진심으로 덤빕니다.</p></div>
+        <div class="hero-copy"><span class="badge">PLAYTEST 0.3</span><h2>이제 네모들이 진짜 뛴다.</h2><p>리듬을 타면 가속, 삐끗하면 대굴대굴. 소리·진동·세리머니까지 게임 느낌을 올렸어.</p></div>
         <div class="mascot-wrap"><div class="nemo mascot sugar"><span class="face">•̀ᴗ•́</span><i class="arm l"></i><i class="arm r"></i><i class="leg l"></i><i class="leg r"></i></div></div>
       </div>
       <h3 class="section-title">AI 난이도</h3>
@@ -28,7 +28,7 @@
       <h3 class="section-title">캐릭터 선택</h3><div id="characterGrid" class="character-grid"></div>
       <h3 class="section-title">종목 선택</h3>
       <div class="event-grid">
-        <button class="event-card featured" data-event="sprint"><span class="event-icon">🏃</span><strong>50m 네모 달리기 <em>0.2</em></strong><small>콤보·가속·발 꼬임·AI 실수 추가</small></button>
+        <button class="event-card featured" data-event="sprint"><span class="event-icon">🏃</span><strong>50m 네모 달리기 <em>0.3</em></strong><small>달리기 모션·카운트다운·효과음·넘어짐·결승 연출</small></button>
         <button class="event-card" data-event="reaction"><span class="event-icon">⚡</span><strong>반응속도</strong><small>GO! 뜨기 전 누르면 실격</small></button>
         <button class="event-card" data-event="jump"><span class="event-icon">🪽</span><strong>멀리뛰기</strong><small>연타로 속도 + 타이밍 점프</small></button>
       </div>
@@ -37,7 +37,7 @@
     <section id="gameScreen" class="screen">
       <div class="game-head"><button id="backBtn" class="ghost-btn">← 나가기</button><div><p id="roundLabel" class="eyebrow">경기</p><h2 id="gameTitle">50m 네모 달리기</h2></div><div id="timer" class="timer">READY</div></div>
       <div id="sprintHud" class="sprint-hud hidden"><div><small>COMBO</small><strong id="comboValue">0</strong></div><div class="speed-meter"><span id="speedFillRace"></span></div><div><small>속도</small><strong id="speedTier">1단</strong></div></div>
-      <div id="arena" class="arena"></div><div id="gameControls" class="controls"></div><p id="gameHint" class="hint"></p>
+      <div id="arena" class="arena"></div><div id="raceCall" class="race-call hidden"></div><div id="gameControls" class="controls"></div><p id="gameHint" class="hint"></p>
     </section>
     <section id="resultScreen" class="screen">
       <div class="result-card"><p class="eyebrow">경기 종료</p><h2 id="resultTitle">결과!</h2><div id="podium" class="podium"></div><div id="resultList" class="result-list"></div><div id="rewardBox" class="reward-box"><span>획득</span><strong id="rewardText">🪙 20</strong></div><div class="result-actions"><button id="retryBtn" class="primary-btn">한 판 더</button><button id="homeBtn" class="secondary-btn">종목 고르기</button></div></div>
