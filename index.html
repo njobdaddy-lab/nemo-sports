@@ -4,8 +4,9 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
 <meta name="theme-color" content="#0b1020" />
-<title>네모 운동회 0.5</title>
-<link rel="stylesheet" href="./style.css?v=050" />
+<title>네모 운동회 0.5.1</title>
+<link rel="stylesheet" href="./style.css?v=051" />
+<style>[hidden]{display:none!important}</style>
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
 </head>
 <body>
@@ -16,7 +17,7 @@
       <button id="soundBtn" class="icon-btn">🔊</button>
     </header>
     <div class="hero">
-      <div><span class="badge">PLAYTEST 0.5</span><h2>웹페이지 느낌은 줄이고,<br>경기장을 크게.</h2><p>선택은 짧게, 플레이는 크게. 세 종목 모두 화면 안에서 실제로 움직인다.</p></div>
+      <div><span class="badge">PLAYTEST 0.5.1</span><h2>빈 결과창 버그 수정.<br>AI도 끝까지 달린다.</h2><p>결과창·재시작·AI 결승 진행을 먼저 안정화한 핫픽스 버전.</p></div>
       <div class="hero-cube">•ᴗ•</div>
     </div>
     <h3>AI 난이도</h3><div id="difficultyGrid" class="difficulty-grid"></div>
@@ -53,6 +54,7 @@
     <div class="result-actions"><button id="retryBtn" class="primary">한 판 더</button><button id="homeBtn" class="secondary">다른 경기</button></div>
   </div>
 </div>
-<script src="./app.js?v=050"></script>
+<script src="./app.js?v=051"></script>
+<script src="./hotfix051.js?v=051"></script>
 </body>
 </html>
