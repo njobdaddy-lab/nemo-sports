@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#171923" />
+  <title>네모 운동회 MVP</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <main id="app">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">세상의 모든 네모가 모였다</p>
+        <h1>네모 운동회</h1>
+      </div>
+      <button id="soundBtn" class="icon-btn" aria-label="소리">🔊</button>
+    </header>
+
+    <section id="homeScreen" class="screen active">
+      <div class="hero-card">
+        <div class="hero-copy">
+          <span class="badge">MVP 0.1</span>
+          <h2>오늘의 네모를 골라봐</h2>
+          <p>각설탕부터 아파트까지. 능력치는 모두 같고, 자존심만 다릅니다.</p>
+        </div>
+        <div class="mascot-wrap">
+          <div class="nemo mascot sugar"><span class="face">•ᴗ•</span><i class="arm l"></i><i class="arm r"></i><i class="leg l"></i><i class="leg r"></i></div>
+        </div>
+      </div>
+
+      <h3 class="section-title">캐릭터 선택</h3>
+      <div id="characterGrid" class="character-grid"></div>
+
+      <h3 class="section-title">종목 선택</h3>
+      <div class="event-grid">
+        <button class="event-card" data-event="sprint">
+          <span class="event-icon">🏃</span>
+          <strong>50m 광클 달리기</strong>
+          <small>왼발·오른발 번갈아 연타</small>
+        </button>
+        <button class="event-card" data-event="reaction">
+          <span class="event-icon">⚡</span>
+          <strong>반응속도</strong>
+          <small>GO! 뜨기 전 누르면 실격</small>
+        </button>
+        <button class="event-card" data-event="jump">
+          <span class="event-icon">🪽</span>
+          <strong>멀리뛰기</strong>
+          <small>연타로 속도 + 타이밍 점프</small>
+        </button>
+      </div>
+
+      <button id="randomBtn" class="primary-btn">🎲 랜덤 종목 시작</button>
+    </section>
+
+    <section id="gameScreen" class="screen">
+      <div class="game-head">
+        <button id="backBtn" class="ghost-btn">← 나가기</button>
+        <div>
+          <p id="roundLabel" class="eyebrow">경기</p>
+          <h2 id="gameTitle">50m 광클 달리기</h2>
+        </div>
+        <div id="timer" class="timer">READY</div>
+      </div>
+
+      <div id="arena" class="arena"></div>
+      <div id="gameControls" class="controls"></div>
+      <p id="gameHint" class="hint"></p>
+    </section>
+
+    <section id="resultScreen" class="screen">
+      <div class="result-card">
+        <p class="eyebrow">경기 종료</p>
+        <h2 id="resultTitle">결과!</h2>
+        <div id="podium" class="podium"></div>
+        <div id="resultList" class="result-list"></div>
+        <div id="rewardBox" class="reward-box">
+          <span>획득</span>
+          <strong id="rewardText">🪙 20</strong>
+        </div>
+        <div class="result-actions">
+          <button id="retryBtn" class="primary-btn">한 판 더</button>
+          <button id="homeBtn" class="secondary-btn">종목 고르기</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast"></div>
+  <script src="./app.js"></script>
+</body>
+</html>
