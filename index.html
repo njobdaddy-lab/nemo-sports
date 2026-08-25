@@ -10,84 +10,38 @@
 <body>
   <main id="app">
     <header class="topbar">
-      <div>
-        <p class="eyebrow">세상의 모든 네모가 모였다</p>
-        <h1>네모 운동회</h1>
-      </div>
+      <div><p class="eyebrow">세상의 모든 네모가 모였다</p><h1>네모 운동회</h1></div>
       <button id="soundBtn" class="icon-btn" aria-label="소리">🔊</button>
     </header>
-
     <section id="homeScreen" class="screen active">
       <div class="hero-card">
-        <div class="hero-copy">
-          <span class="badge">MVP 0.1</span>
-          <h2>오늘의 네모를 골라봐</h2>
-          <p>각설탕부터 아파트까지. 능력치는 모두 같고, 자존심만 다릅니다.</p>
-        </div>
-        <div class="mascot-wrap">
-          <div class="nemo mascot sugar"><span class="face">•ᴗ•</span><i class="arm l"></i><i class="arm r"></i><i class="leg l"></i><i class="leg r"></i></div>
-        </div>
+        <div class="hero-copy"><span class="badge">MVP 0.2</span><h2>발 꼬이면 끝이다.</h2><p>왼발·오른발 리듬을 타고 달려. AI도 이제 실수하고, 난이도에 따라 진심으로 덤빕니다.</p></div>
+        <div class="mascot-wrap"><div class="nemo mascot sugar"><span class="face">•̀ᴗ•́</span><i class="arm l"></i><i class="arm r"></i><i class="leg l"></i><i class="leg r"></i></div></div>
       </div>
-
-      <h3 class="section-title">캐릭터 선택</h3>
-      <div id="characterGrid" class="character-grid"></div>
-
+      <h3 class="section-title">AI 난이도</h3>
+      <div id="difficultyGrid" class="difficulty-grid">
+        <button class="difficulty-btn" data-difficulty="easy"><strong>느긋</strong><small>AI도 자주 발 꼬임</small></button>
+        <button class="difficulty-btn selected" data-difficulty="normal"><strong>보통</strong><small>딱 한 판 붙기 좋음</small></button>
+        <button class="difficulty-btn" data-difficulty="hard"><strong>빡셈</strong><small>리듬 놓치면 바로 추월</small></button>
+        <button class="difficulty-btn" data-difficulty="hell"><strong>악마</strong><small>벽돌도 날아다님</small></button>
+      </div>
+      <h3 class="section-title">캐릭터 선택</h3><div id="characterGrid" class="character-grid"></div>
       <h3 class="section-title">종목 선택</h3>
       <div class="event-grid">
-        <button class="event-card" data-event="sprint">
-          <span class="event-icon">🏃</span>
-          <strong>50m 광클 달리기</strong>
-          <small>왼발·오른발 번갈아 연타</small>
-        </button>
-        <button class="event-card" data-event="reaction">
-          <span class="event-icon">⚡</span>
-          <strong>반응속도</strong>
-          <small>GO! 뜨기 전 누르면 실격</small>
-        </button>
-        <button class="event-card" data-event="jump">
-          <span class="event-icon">🪽</span>
-          <strong>멀리뛰기</strong>
-          <small>연타로 속도 + 타이밍 점프</small>
-        </button>
+        <button class="event-card featured" data-event="sprint"><span class="event-icon">🏃</span><strong>50m 네모 달리기 <em>0.2</em></strong><small>콤보·가속·발 꼬임·AI 실수 추가</small></button>
+        <button class="event-card" data-event="reaction"><span class="event-icon">⚡</span><strong>반응속도</strong><small>GO! 뜨기 전 누르면 실격</small></button>
+        <button class="event-card" data-event="jump"><span class="event-icon">🪽</span><strong>멀리뛰기</strong><small>연타로 속도 + 타이밍 점프</small></button>
       </div>
-
       <button id="randomBtn" class="primary-btn">🎲 랜덤 종목 시작</button>
     </section>
-
     <section id="gameScreen" class="screen">
-      <div class="game-head">
-        <button id="backBtn" class="ghost-btn">← 나가기</button>
-        <div>
-          <p id="roundLabel" class="eyebrow">경기</p>
-          <h2 id="gameTitle">50m 광클 달리기</h2>
-        </div>
-        <div id="timer" class="timer">READY</div>
-      </div>
-
-      <div id="arena" class="arena"></div>
-      <div id="gameControls" class="controls"></div>
-      <p id="gameHint" class="hint"></p>
+      <div class="game-head"><button id="backBtn" class="ghost-btn">← 나가기</button><div><p id="roundLabel" class="eyebrow">경기</p><h2 id="gameTitle">50m 네모 달리기</h2></div><div id="timer" class="timer">READY</div></div>
+      <div id="sprintHud" class="sprint-hud hidden"><div><small>COMBO</small><strong id="comboValue">0</strong></div><div class="speed-meter"><span id="speedFillRace"></span></div><div><small>속도</small><strong id="speedTier">1단</strong></div></div>
+      <div id="arena" class="arena"></div><div id="gameControls" class="controls"></div><p id="gameHint" class="hint"></p>
     </section>
-
     <section id="resultScreen" class="screen">
-      <div class="result-card">
-        <p class="eyebrow">경기 종료</p>
-        <h2 id="resultTitle">결과!</h2>
-        <div id="podium" class="podium"></div>
-        <div id="resultList" class="result-list"></div>
-        <div id="rewardBox" class="reward-box">
-          <span>획득</span>
-          <strong id="rewardText">🪙 20</strong>
-        </div>
-        <div class="result-actions">
-          <button id="retryBtn" class="primary-btn">한 판 더</button>
-          <button id="homeBtn" class="secondary-btn">종목 고르기</button>
-        </div>
-      </div>
+      <div class="result-card"><p class="eyebrow">경기 종료</p><h2 id="resultTitle">결과!</h2><div id="podium" class="podium"></div><div id="resultList" class="result-list"></div><div id="rewardBox" class="reward-box"><span>획득</span><strong id="rewardText">🪙 20</strong></div><div class="result-actions"><button id="retryBtn" class="primary-btn">한 판 더</button><button id="homeBtn" class="secondary-btn">종목 고르기</button></div></div>
     </section>
   </main>
-
-  <div id="toast" class="toast"></div>
-  <script src="./app.js"></script>
-</body>
-</html>
+  <div id="toast" class="toast"></div><script src="./app.js"></script>
+</body></html>
