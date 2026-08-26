@@ -4,26 +4,27 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#0a1020">
-<title>네모 운동회 0.7.2 · Modular Characters</title>
+<title>네모 운동회 0.7.3 · Rigged Sugar Cube</title>
 <link rel="stylesheet" href="./style.css?v=070">
+<link rel="stylesheet" href="./style073.css?v=073">
 </head>
 <body>
 <main id="app">
 <section id="home">
-<header class="top"><div><p class="eyebrow">세상의 모든 네모가 선수라면?</p><h1>네모 운동회</h1></div><button id="sound" class="icon">🔊</button></header>
-<div class="hero"><div><span class="badge">🎮 PLAYTEST 0.7.2 · MODULAR</span><h2>캐릭터가 이제<br>진짜 몸을 갖는다.</h2><p>짧은 팔다리, 캐릭터별 재질과 표정, 몸통과 함께 넘어지는 파츠형 캐릭터 테스트.</p></div><div class="heroCube">•ᴗ•</div></div>
+<header class="top"><div><p class="eyebrow">세상의 모든 네모가 선수라면?</p><h1>네모 운동회</h1></div><button id="sound" class="icon" hidden>🔊</button></header>
+<div class="hero"><div><span class="badge">🎮 PLAYTEST 0.7.3 · RIGGED CHARACTER</span><h2>이번엔 각설탕이<br>진짜로 달린다.</h2><p>예쁜 몸통·팔·다리 이미지를 따로 조립해 통통 뛰고, 발이 꼬이면 팔다리까지 붙은 채 통째로 넘어진다.</p></div><div class="heroCube">•ᴗ•</div></div>
 <h3>AI 난이도</h3><div id="difficulty" class="difficulty"></div>
 <h3>내 네모</h3><div id="chars" class="chars"></div>
-<h3>경기 선택</h3><div class="events"><button class="event active"><span>🏃</span><b>50m 네모 달리기</b><small>좌·우 발 리듬 + 가속 + 발 꼬임. 파츠형 캐릭터 적용 테스트.</small></button><button class="event locked" disabled><span>🪽</span><b>멀리뛰기</b><small>50m 캐릭터 품질 기준 확정 후 재제작.</small><em class="coming">준비중</em></button><button class="event locked" disabled><span>🚦</span><b>스타트 대결</b><small>50m 품질 기준 확정 후 다시 설계.</small><em class="coming">준비중</em></button></div>
+<h3>경기 선택</h3><div class="events"><button class="event active"><span>🏃</span><b>50m 네모 달리기</b><small>좌·우 발 리듬 + 가속 + 발 꼬임. 각설탕 실전 리깅 테스트.</small></button><button class="event locked" disabled><span>🪽</span><b>멀리뛰기</b><small>50m 캐릭터 품질 기준 확정 후 재제작.</small><em class="coming">준비중</em></button><button class="event locked" disabled><span>🚦</span><b>스타트 대결</b><small>50m 품질 기준 확정 후 다시 설계.</small><em class="coming">준비중</em></button></div>
 <button id="startBtn" class="startBtn">🏁 50m 경기 시작</button>
 </section>
 <section id="game" hidden>
-<div class="gameTop"><button id="back" class="back">←</button><div class="gameTitle"><small id="round">AI 보통 · PLAYTEST 0.7.2</small><b>50m 네모 달리기</b></div><div id="timer" class="timer">READY</div></div>
-<div class="stage"><canvas id="canvas" width="1280" height="720"></canvas><div class="hud"><div class="hudBox"><span>COMBO</span><b id="combo">0</b></div><div class="hudBox"><span>SPEED</span><b id="speed">0%</b><div class="speedBar"><i id="speedBar"></i></div></div></div><div id="msg" class="msg"></div><div class="progress"><i id="progressBar"></i><span id="progressText">0m / 50m</span></div><div id="rankBadge" class="rankBadge">4위</div></div>
-<div class="controls"><div class="feet"><button id="left" class="foot">👈 왼발</button><button id="right" class="foot">오른발 👉</button></div></div><p class="hint">왼발 ↔ 오른발을 번갈아 눌러. 같은 발을 두 번 누르면 몸통과 팔다리가 같이 기우뚱 넘어진다 ㅋㅋ</p>
+<div class="gameTop"><button id="back" class="back">←</button><div class="gameTitle"><small id="round">AI 보통 · PLAYTEST 0.7.3</small><b>50m 네모 달리기</b></div><div id="timer" class="timer">READY</div></div>
+<div class="stage"><canvas id="canvas" width="1280" height="860"></canvas><div class="hud"><div class="hudBox"><span>COMBO</span><b id="combo">0</b></div><div class="hudBox"><span>SPEED</span><b id="speed">0%</b><div class="speedBar"><i id="speedBar"></i></div></div></div><div id="msg" class="msg"></div><div class="progress"><i id="progressBar"></i><span id="progressText">0m / 50m</span></div><div id="rankBadge" class="rankBadge">4위</div></div>
+<div class="controls"><div class="feet"><button id="left" class="foot">👈 왼발</button><button id="right" class="foot">오른발 👉</button></div></div><p class="hint">왼발 ↔ 오른발을 번갈아 눌러. 같은 발을 두 번 누르면 각설탕이 통째로 철푸덕 넘어진다 ㅋㅋ</p>
 </section>
 </main>
 <div id="result" class="result" hidden><div class="resultCard"><div class="resultTop"><div><small>🏁 50m 경기 종료</small><h2 id="resultTitle">결과</h2></div><div id="record" class="record">0.00s</div></div><div id="podium" class="podium"></div><div id="rows" class="rows"></div><div class="actions"><button id="retry" class="retry">한 판 더</button><button id="homeBtn" class="homeBtn">선수 선택</button></div></div></div>
-<script src="./app072.js?v=072"></script>
+<script src="./app073.js?v=073"></script>
 </body>
 </html>
