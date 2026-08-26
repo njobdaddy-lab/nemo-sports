@@ -44,17 +44,17 @@
     </div>
   </section>
   <section class="homePanel racePanel">
-    <div class="raceScene" aria-label="50m 네모 달리기 경기 미리보기">
-      <div class="crowdDots"></div><div class="raceLogo">NEMO SPORTS · 50M</div>
-      <div class="raceCopy"><small>TODAY'S RACE</small><strong>50m<br>네모 달리기</strong></div>
+    <div class="raceScene" aria-label="100m 네모 달리기 경기 미리보기">
+      <div class="crowdDots"></div><div class="raceLogo">NEMO SPORTS · 100M</div>
+      <div class="raceCopy"><small>TODAY'S RACE</small><strong>100m<br>네모 달리기</strong></div>
       <div class="raceMascots" aria-hidden="true"><i class="m1"></i><i class="m2"></i><i class="m3"></i></div>
     </div>
     <div class="eventZone events">
-      <button class="event active"><span>🏃</span><b>50m 달리기</b><small>스타트와 발 리듬을 맞춰 최고속도에 도전해.</small></button>
+      <button class="event active"><span>🏃</span><b>100m 달리기</b><small>스타트, 리듬, 추월과 막판 스퍼트까지 끝까지 집중해.</small></button>
       <button class="event locked" disabled><span>🎁</span><b>장거리 아이템전</b><small>추월과 역전, 아이템으로 뒤집는 대질주.</small><em class="coming">준비중</em></button>
       <button class="event locked" disabled><span>🪽</span><b>멀리뛰기</b><small>준비중</small><em class="coming">준비중</em></button>
     </div>
-    <button id="startBtn" class="startBtn">🏁 경기 시작</button>
+    <button id="startBtn" class="startBtn" disabled>⏳ 100m 준비 중...</button>
   </section>
   <aside class="homePanel setupPanel">
     <div class="panelHead"><h3>AI 난이도</h3><small>RIVAL LEVEL</small></div>
@@ -69,16 +69,13 @@
 </div>
 </section>
 <section id="game" hidden>
-<div class="gameTop"><button id="back" class="back">←</button><div class="gameTitle"><small id="round">NEMO SPORTS · 50M</small><b>50m 네모 달리기</b></div><div id="timer" class="timer">READY</div></div>
-<div class="stage"><canvas id="canvas" width="1280" height="720"></canvas><div class="hud"><div class="hudBox"><span>COMBO</span><b id="combo">0</b></div><div class="hudBox"><span>SPEED</span><b id="speed">0%</b><div class="speedBar"><i id="speedBar"></i></div></div></div><div id="msg" class="msg"></div><div class="progress"><i id="progressBar"></i><span id="progressText">0m / 50m</span></div><div id="rankBadge" class="rankBadge">4위</div></div>
+<div class="gameTop"><button id="back" class="back">←</button><div class="gameTitle"><small id="round">NEMO SPORTS · 100M</small><b>100m 네모 달리기</b></div><div id="timer" class="timer">READY</div></div>
+<div class="stage"><canvas id="canvas" width="1280" height="720"></canvas><div class="hud"><div class="hudBox"><span>COMBO</span><b id="combo">0</b></div><div class="hudBox"><span>SPEED</span><b id="speed">0%</b><div class="speedBar"><i id="speedBar"></i></div></div></div><div id="msg" class="msg"></div><div class="progress"><i id="progressBar"></i><span id="progressText">0m / 100m</span></div><div id="rankBadge" class="rankBadge">4위</div></div>
 <div class="controls"><div class="feet"><button id="left" class="foot">👈 왼발</button><button id="right" class="foot">오른발 👉</button></div></div><p class="hint">왼발 ↔ 오른발을 번갈아 눌러 달려!</p>
 </section>
 </main>
-<div id="result" class="result" hidden><div class="resultCard"><div class="resultTop"><div><small>🏁 50m 경기 종료</small><h2 id="resultTitle">결과</h2></div><div id="record" class="record">0.00s</div></div><div id="podium" class="podium"></div><div id="rows" class="rows"></div><div class="actions"><button id="retry" class="retry">한 판 더</button><button id="homeBtn" class="homeBtn">선수 선택</button></div></div></div>
-<script src="./app083.js?v=083"></script>
-<script src="./input078.js?v=078"></script>
-<script src="./challenge079.js?v=079"></script>
-<script src="./final-sprint084.js?v=085"></script>
+<div id="result" class="result" hidden><div class="resultCard"><div class="resultTop"><div><small>🏁 100m 경기 종료</small><h2 id="resultTitle">결과</h2></div><div id="record" class="record">0.00s</div></div><div id="podium" class="podium"></div><div id="rows" class="rows"></div><div class="actions"><button id="retry" class="retry">한 판 더</button><button id="homeBtn" class="homeBtn">선수 선택</button></div></div></div>
+<script src="./app100-loader.js?v=100"></script>
 <script src="./fullscreen.js?v=1"></script>
 <script src="./pwa.js?v=2"></script>
 </body>
