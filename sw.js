@@ -1,11 +1,12 @@
-const CACHE_NAME = 'nemo-sports-shell-v5';
+const CACHE_NAME = 'nemo-sports-shell-v6';
 const APP_SHELL = [
   './',
   './index.html',
   './style.css?v=070',
   './style076.css?v=076',
+  './gameplay077.css?v=077',
   './home-v2.css?v=2',
-  './app076.js?v=076',
+  './app077.js?v=077',
   './fullscreen.js?v=1',
   './pwa.js?v=2',
   './manifest.webmanifest',
