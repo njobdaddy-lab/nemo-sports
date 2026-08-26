@@ -15,7 +15,7 @@
 <link rel="icon" href="./assets/nemo-icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="./assets/nemo-icon.svg">
 <link rel="stylesheet" href="./style.css?v=070">
-<link rel="stylesheet" href="./style074.css?v=075">
+<link rel="stylesheet" href="./style076.css?v=076">
 <link rel="stylesheet" href="./home-v2.css?v=2">
 </head>
 <body>
@@ -24,7 +24,7 @@
 <header class="top">
   <div><p class="eyebrow">세상의 모든 네모가 선수다</p><h1>네모 운동회</h1></div>
   <div class="homeActions">
-    <button id="installApp" class="icon" hidden aria-label="네모 운동회 설치" title="홈 화면에 설치">⬇️</button>
+    <button id="installApp" class="icon" hidden aria-label="네모 운동회 설치" title="홈 화면에 설치">⬇️ 설치</button>
     <button id="sound" class="icon" aria-label="소리 켜기/끄기">🔊</button>
   </div>
 </header>
@@ -73,13 +73,13 @@
 
 <section id="game" hidden>
 <div class="gameTop"><button id="back" class="back">←</button><div class="gameTitle"><small id="round">NEMO SPORTS · 50M</small><b>50m 네모 달리기</b></div><div id="timer" class="timer">READY</div></div>
-<div class="stage"><canvas id="canvas" width="1080" height="1150"></canvas><div class="hud"><div class="hudBox"><span>COMBO</span><b id="combo">0</b></div><div class="hudBox"><span>SPEED</span><b id="speed">0%</b><div class="speedBar"><i id="speedBar"></i></div></div></div><div id="msg" class="msg"></div><div class="progress"><i id="progressBar"></i><span id="progressText">0m / 50m</span></div><div id="rankBadge" class="rankBadge">4위</div></div>
+<div class="stage"><canvas id="canvas" width="1280" height="720"></canvas><div class="hud"><div class="hudBox"><span>COMBO</span><b id="combo">0</b></div><div class="hudBox"><span>SPEED</span><b id="speed">0%</b><div class="speedBar"><i id="speedBar"></i></div></div></div><div id="msg" class="msg"></div><div class="progress"><i id="progressBar"></i><span id="progressText">0m / 50m</span></div><div id="rankBadge" class="rankBadge">4위</div></div>
 <div class="controls"><div class="feet"><button id="left" class="foot">👈 왼발</button><button id="right" class="foot">오른발 👉</button></div></div><p class="hint">왼발 ↔ 오른발을 번갈아 눌러 달려!</p>
 </section>
 </main>
 <div id="result" class="result" hidden><div class="resultCard"><div class="resultTop"><div><small>🏁 50m 경기 종료</small><h2 id="resultTitle">결과</h2></div><div id="record" class="record">0.00s</div></div><div id="podium" class="podium"></div><div id="rows" class="rows"></div><div class="actions"><button id="retry" class="retry">한 판 더</button><button id="homeBtn" class="homeBtn">선수 선택</button></div></div></div>
-<script src="./app074.js?v=074"></script>
+<script src="./app076.js?v=076"></script>
 <script src="./fullscreen.js?v=1"></script>
-<script src="./pwa.js?v=1"></script>
+<script src="./pwa.js?v=2"></script>
 </body>
 </html>
