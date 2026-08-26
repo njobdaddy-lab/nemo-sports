@@ -1,0 +1,1 @@
+(()=>{const p=HTMLImageElement.prototype,d=Object.getOwnPropertyDescriptor(p,'src');if(!d||!d.set)return;Object.defineProperty(p,'src',{configurable:true,enumerable:d.enumerable,get:d.get,set(v){if(typeof v==='string'&&v.includes('assets/stadium075.webp'))v=v.replace('stadium075.webp','stadium075.svg');d.set.call(this,v)}})})();
