@@ -14,8 +14,8 @@ function sync(){
   if(logo)logo.textContent='NEMO SPORTS · OBSTACLE';
   if(copy){const sm=copy.querySelector('small'),st=copy.querySelector('strong');if(sm)sm.textContent="TODAY'S RACE";if(st)st.innerHTML='100m<br>장애물 달리기'}
   if(scene)scene.setAttribute('aria-label','100m 장애물 달리기 경기 미리보기');
-  if(rule){const strong=rule.querySelector('strong'),p=rule.querySelector('p'),keys=rule.querySelector('.ruleKeys');if(strong)strong.textContent='왼발 ↔ 오른발 + 점프 타이밍';if(p)p.textContent='리듬을 유지하면서 달리고, 허들·웅덩이·박스벽이 오면 점프! 상대 선수들도 장애물에 반응한다.';if(keys)keys.innerHTML='<span>👈 왼발</span><span>⬆️ 점프</span><span>오른발 👉</span>'}
-  if(hint)hint.textContent='장애물전은 5명이 같이 장애물을 넘는다. 라이벌도 타이밍을 놓치면 꽈당!';
+  if(rule){const strong=rule.querySelector('strong'),p=rule.querySelector('p'),keys=rule.querySelector('.ruleKeys');if(strong)strong.textContent='왼발 ↔ 오른발 + 점프 타이밍';if(p)p.textContent='리듬을 유지하면서 달리고, 허들·웅덩이·박스벽이 오면 점프! 상대 선수들도 각자 레인에서 장애물을 넘는다.';if(keys)keys.innerHTML='<span>👈 왼발</span><span>⬆️ 점프</span><span>오른발 👉</span>'}
+  if(hint)hint.textContent='장애물전은 5명이 각자 레인에서 같은 장애물을 넘는다. 라이벌도 타이밍을 놓치면 꽈당!';
   if(start.disabled)start.disabled=false;
   if(start.textContent!=='🪽 장애물 경기 시작')start.textContent='🪽 장애물 경기 시작';
  }else{
@@ -32,7 +32,7 @@ start.addEventListener('click',e=>{
  if(selected!=='obstacle')return;
  e.preventDefault();e.stopImmediatePropagation();
  const ch=selectedChar();localStorage.setItem('nemo-obstacle-char',ch);
- location.href=`./obstacle-v2.html?autostart=1&char=${encodeURIComponent(ch)}&v=3`;
+ location.href=`./obstacle-v3.html?autostart=1&char=${encodeURIComponent(ch)}&v=4`;
 },true);
 const mo=new MutationObserver(()=>{if(selected==='obstacle'&&(start.disabled||start.textContent!=='🪽 장애물 경기 시작'))queueMicrotask(sync)});mo.observe(start,{attributes:true,childList:true,subtree:true});
 sync();
