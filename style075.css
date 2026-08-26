@@ -1,0 +1,46 @@
+/* 0.7.5 — dynamic camera / image stadium vertical slice */
+body.race075{background:#030a16;overflow-x:hidden}
+body.race075 #app{max-width:760px;padding:4px 5px 12px}
+body.race075 .gameTop{height:40px;margin:0 0 4px;grid-template-columns:36px 1fr 68px;gap:6px}
+body.race075 .back{width:36px;height:36px;border-radius:12px;font-size:18px;background:#07162c;border-color:#ffffff24}
+body.race075 .gameTitle small{font-size:7px;letter-spacing:.025em;color:#70d7ff}
+body.race075 .gameTitle b{font-size:14px;line-height:1}
+body.race075 .timer{padding:5px 6px;min-width:64px;border-radius:11px;font-size:12px;background:#071325e8;border-color:#ffffff2a}
+body.race075 .stage{position:relative;border-radius:20px;border:1px solid #ffffff29;box-shadow:0 14px 42px #000a;overflow:hidden;background:#4cc7ff}
+body.race075 .stage canvas{display:block;width:100%;height:auto;aspect-ratio:1080/1150;background:#4cc7ff}
+body.race075 .hud{left:9px;right:auto;top:9px;gap:7px;align-items:flex-start}
+body.race075 .hudBox{padding:5px 8px;min-width:76px;border-radius:13px;background:linear-gradient(180deg,#061831e8,#06101fe8);border:2px solid #3d9dff88;box-shadow:0 6px 18px #0006,inset 0 1px 0 #ffffff24}
+body.race075 .hudBox:first-child{border-color:#ffbc338f}
+body.race075 .hudBox span{font-size:7px;font-weight:1000;letter-spacing:.06em;color:#fff}
+body.race075 .hudBox b{font-size:16px;line-height:1;color:#fff}
+body.race075 .hudBox:first-child b{color:#ffd84d;text-shadow:0 1px 7px #ff7a00aa}
+body.race075 .speedBar{width:82px;height:6px;margin-top:4px;background:#020711b8;border:1px solid #ffffff22}
+body.race075 .speedBar i{background:linear-gradient(90deg,#28e6ba,#ffd84d,#ff634f)}
+.distancePanel075{position:absolute;z-index:4;right:9px;top:9px;display:flex;align-items:baseline;gap:2px;padding:6px 9px;border-radius:14px;background:linear-gradient(180deg,#0b2b5aee,#07152bee);border:2px solid #55b8ff99;box-shadow:0 7px 18px #0006;color:#fff;pointer-events:none}
+.distancePanel075 small{font-size:12px;margin-right:2px}.distancePanel075 b{font-size:21px;line-height:1;color:#ffd84d;text-shadow:0 2px 0 #8a4b00}.distancePanel075 span{font-size:9px;font-weight:900;color:#d8e8ff}
+body.race075 .progress{bottom:9px;width:55%;max-width:290px;height:17px;background:#061326e8;border:2px solid #ffffff40;box-shadow:0 5px 16px #0006}
+body.race075 .progress i{background:linear-gradient(90deg,#22d7ff,#64e66b 35%,#ffd84d 68%,#ff5e6d)}
+body.race075 .progress span{font-size:8px;text-shadow:0 1px 3px #000}
+body.race075 .rankBadge{display:none}
+.rankList075{position:absolute;z-index:4;left:8px;top:92px;display:grid;gap:4px;pointer-events:none;width:104px}
+.rankRow{height:27px;border-radius:9px;background:#071327dc;border:1px solid #ffffff24;display:grid;grid-template-columns:25px 24px 1fr;align-items:center;padding:2px 5px;box-shadow:0 4px 11px #0004;transition:.15s}
+.rankRow.me{background:linear-gradient(90deg,#ffd84de8,#ff9a3be8);color:#101725;transform:scale(1.04);border-color:#fff6a8}
+.rankRow b{font-size:10px}.rankRow i{width:20px;height:20px;border-radius:6px;background:var(--cc);display:grid;place-items:center;color:#20242d;font-size:8px;font-style:normal;box-shadow:inset 0 2px 4px #fff7}.rankRow span{font-size:8px;font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cameraCue075{position:absolute;z-index:4;left:50%;top:76px;transform:translateX(-50%) scale(.88);opacity:0;pointer-events:none;padding:6px 12px;border-radius:999px;font-size:10px;font-weight:1000;letter-spacing:.08em;color:#fff;background:#061326d9;border:1px solid #ffffff32;box-shadow:0 5px 14px #0005;transition:opacity .12s,transform .12s}
+.cameraCue075[data-mode="BOOST"],.cameraCue075[data-mode="FINISH"],.cameraCue075[data-mode="STUMBLE"],.cameraCue075[data-mode="START"]{opacity:1;transform:translateX(-50%) scale(1)}
+.cameraCue075[data-mode="BOOST"]{color:#9ee7ff;border-color:#56caff88}.cameraCue075[data-mode="FINISH"]{color:#ffe16a;border-color:#ffd84d88}.cameraCue075[data-mode="STUMBLE"]{color:#ff9cae;border-color:#ff5e6d88}
+body.race075 .msg{top:19%;padding:8px 13px;font-size:12px;background:#071426ef;border:1px solid #ffffff2e}
+body.race075 .controls{padding-top:6px}.feet{gap:8px}
+body.race075 .foot{min-height:76px;border-radius:24px;font-size:0;position:relative;overflow:hidden;border:2px solid #ffffff20;box-shadow:inset 0 -8px 0 #0005,0 7px 18px #0006;transition:transform .07s,filter .09s,box-shadow .09s}
+body.race075 .foot .footIcon{display:block;font-size:23px;line-height:1;margin-bottom:1px;filter:drop-shadow(0 2px 1px #0004)}
+body.race075 .foot b{display:block;font-size:17px;line-height:1.1;letter-spacing:-.03em}
+body.race075 #left{background:radial-gradient(circle at 30% 18%,#58c3ff,#176bd7 64%,#0e3d8e)}
+body.race075 #right{background:radial-gradient(circle at 30% 18%,#ff84a1,#e62f67 64%,#8e1640)}
+body.race075 #left.next{filter:brightness(1.2);transform:translateY(-2px) scale(1.015);box-shadow:0 0 0 4px #5ed2ff5c,0 0 24px #1a9dff99,inset 0 -7px 0 #0d4ca0}
+body.race075 #right.next{filter:brightness(1.18);transform:translateY(-2px) scale(1.015);box-shadow:0 0 0 4px #ff82a85c,0 0 24px #ff3b7899,inset 0 -7px 0 #941f48}
+body.race075 .foot:active{transform:translateY(4px) scale(.98)!important;box-shadow:inset 0 -3px 0 #0005,0 3px 8px #0007!important}
+body.race075 .foot:disabled{opacity:.48;filter:grayscale(.22)}body.race075 .hint{display:none}
+body.race075 .resultCard{border-radius:24px}
+.sugarHome{width:62px;height:62px;border-radius:15px;display:grid;place-items:center;color:#241d19;font-size:16px;font-weight:1000;background:radial-gradient(circle at 24% 22%,#fff 0 2px,transparent 3px),radial-gradient(circle at 67% 55%,#fff 0 1px,transparent 2px),linear-gradient(145deg,#fffdf8,#eadcc8);box-shadow:inset 0 5px 10px #fff9,0 8px 13px #0005}
+.miniNemo{width:54px!important;height:54px!important}.podium:empty{display:none}.podium:empty+.rows{margin-top:8px}
+@media(min-width:700px){body.race075 #app{max-width:900px}body.race075 .gameTop{height:49px;grid-template-columns:44px 1fr 80px}body.race075 .back{width:44px;height:44px}.gameTitle b{font-size:17px!important}body.race075 .stage canvas{aspect-ratio:1080/1050;object-fit:cover}body.race075 .foot{min-height:88px}.rankList075{top:110px;width:120px}.rankRow{height:31px;grid-template-columns:28px 27px 1fr}.rankRow span{font-size:9px}.distancePanel075 b{font-size:24px}}
