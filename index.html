@@ -60,8 +60,8 @@
       <div class="raceMascots" aria-hidden="true"><i class="m1"></i><i class="m2"></i><i class="m3"></i></div>
     </div>
     <div class="eventZone events">
-      <button class="event active"><span>🏃</span><b>100m 달리기</b><small>스타트, 리듬, 추월과 막판 스퍼트까지 끝까지 집중해.</small></button>
-      <button class="event active" onclick="location.href='./obstacle.html'"><span>🪽</span><b>100m 장애물</b><small>리듬을 유지하면서 허들·웅덩이·박스벽을 넘어라.</small><em class="coming">NEW</em></button>
+      <button class="event active" data-event="sprint"><span>🏃</span><b>100m 달리기</b><small>스타트, 리듬, 추월과 막판 스퍼트까지 끝까지 집중해.</small></button>
+      <button class="event" data-event="obstacle"><span>🪽</span><b>100m 장애물</b><small>리듬을 유지하면서 허들·웅덩이·박스벽을 넘어라.</small><em class="coming">NEW</em></button>
       <button class="event locked" disabled><span>🎁</span><b>장거리 아이템전</b><small>추월과 역전, 아이템으로 뒤집는 대질주.</small><em class="coming">준비중</em></button>
       <button class="event locked" disabled><span>🏅</span><b>멀리뛰기</b><small>도약 타이밍을 맞추는 기록 종목.</small><em class="coming">준비중</em></button>
     </div>
@@ -97,5 +97,6 @@
 <script src="./collection093.js?v=093"></script>
 <script src="./fullscreen.js?v=1"></script>
 <script src="./pwa.js?v=2"></script>
+<script src="./event-select.js?v=1"></script>
 </body>
 </html>
