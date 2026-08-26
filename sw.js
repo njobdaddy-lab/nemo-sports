@@ -1,8 +1,9 @@
-const CACHE_NAME = 'nemo-sports-shell-v30';
+const CACHE_NAME = 'nemo-sports-shell-v31';
 const APP_SHELL = [
   './',
   './index.html',
   './obstacle.html',
+  './obstacle-v2.html',
   './style.css?v=070',
   './style076.css?v=076',
   './gameplay077.css?v=077',
@@ -35,6 +36,7 @@ const APP_SHELL = [
   './collection093.js?v=093',
   './fullscreen.js?v=1',
   './pwa.js?v=2',
+  './event-select.js?v=2',
   './manifest.webmanifest',
   './assets/nemo-icon.svg',
   './assets/nemo-icon-maskable.svg',
