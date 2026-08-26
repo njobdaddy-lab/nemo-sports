@@ -4,27 +4,43 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#0a1020">
-<title>네모 운동회 0.7.4 · Stadium Play Screen</title>
+<meta name="application-name" content="네모 운동회">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="네모 운동회">
+<meta name="description" content="세상의 모든 네모난 물건이 선수가 되는 캐주얼 레이싱 게임">
+<title>네모 운동회</title>
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./assets/nemo-icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="./assets/nemo-icon.svg">
 <link rel="stylesheet" href="./style.css?v=070">
 <link rel="stylesheet" href="./style074.css?v=074">
 </head>
 <body>
 <main id="app">
 <section id="home">
-<header class="top"><div><p class="eyebrow">세상의 모든 네모가 선수라면?</p><h1>네모 운동회</h1></div><button id="sound" class="icon">🔊</button></header>
-<div class="hero"><div><span class="badge">🎮 PLAYTEST 0.7.4 · STADIUM</span><h2>이번엔 캐릭터보다<br>경기장이 먼저 살아난다.</h2><p>관중·깃발·산 배경·트랙·카메라·속도선·결승 연출까지, 실제 한 판처럼 보이는 화면을 우선 완성한다.</p></div><div class="heroCube">•ᴗ•</div></div>
+<header class="top">
+  <div><p class="eyebrow">세상의 모든 네모가 선수라면?</p><h1>네모 운동회</h1></div>
+  <div style="display:flex;gap:7px;align-items:center">
+    <button id="installApp" class="icon" hidden aria-label="네모 운동회 설치" title="홈 화면에 설치">⬇️</button>
+    <button id="sound" class="icon" aria-label="소리 켜기/끄기">🔊</button>
+  </div>
+</header>
+<div class="hero"><div><span class="badge">🏁 NEMO SPORTS</span><h2>네모난 녀석들이<br>전부 선수로 뛰기 시작했다.</h2><p>각설탕부터 벽돌, 휴대폰, 스테이플러까지. 생긴 것도 다르고 달리는 꼴도 다른 네모들의 황당한 운동회.</p></div><div class="heroCube">•ᴗ•</div></div>
 <h3>AI 난이도</h3><div id="difficulty" class="difficulty"></div>
 <h3>내 네모</h3><div id="chars" class="chars"></div>
-<h3>경기 선택</h3><div class="events"><button class="event active"><span>🏃</span><b>50m 네모 달리기</b><small>이번 버전은 경기장·HUD·속도감·결승 연출을 실제 게임 화면처럼 다듬는 테스트.</small></button><button class="event locked" disabled><span>🪽</span><b>멀리뛰기</b><small>50m 한 판의 화면 완성도 확정 후 재제작.</small><em class="coming">준비중</em></button><button class="event locked" disabled><span>🚦</span><b>스타트 대결</b><small>50m 화면 기준 확정 후 다시 설계.</small><em class="coming">준비중</em></button></div>
+<h3>경기 선택</h3><div class="events"><button class="event active"><span>🏃</span><b>50m 네모 달리기</b><small>왼발과 오른발을 번갈아 눌러 달려. 같은 발을 연속으로 누르면 발이 꼬일 수도!</small></button><button class="event locked" disabled><span>🪽</span><b>멀리뛰기</b><small>네모마다 다른 몸으로 누가 가장 멀리 날아갈까?</small><em class="coming">준비중</em></button><button class="event locked" disabled><span>🚦</span><b>스타트 대결</b><small>신호를 보고 가장 빠르게 튀어나가는 네모를 가린다.</small><em class="coming">준비중</em></button></div>
 <button id="startBtn" class="startBtn">🏁 50m 경기 시작</button>
 </section>
 <section id="game" hidden>
-<div class="gameTop"><button id="back" class="back">←</button><div class="gameTitle"><small id="round">AI 보통 · 0.7.4 STADIUM</small><b>50m 네모 달리기</b></div><div id="timer" class="timer">READY</div></div>
+<div class="gameTop"><button id="back" class="back">←</button><div class="gameTitle"><small id="round">NEMO SPORTS · 50M</small><b>50m 네모 달리기</b></div><div id="timer" class="timer">READY</div></div>
 <div class="stage"><canvas id="canvas" width="1080" height="1150"></canvas><div class="hud"><div class="hudBox"><span>COMBO</span><b id="combo">0</b></div><div class="hudBox"><span>SPEED</span><b id="speed">0%</b><div class="speedBar"><i id="speedBar"></i></div></div></div><div id="msg" class="msg"></div><div class="progress"><i id="progressBar"></i><span id="progressText">0m / 50m</span></div><div id="rankBadge" class="rankBadge">4위</div></div>
 <div class="controls"><div class="feet"><button id="left" class="foot">👈 왼발</button><button id="right" class="foot">오른발 👉</button></div></div><p class="hint">왼발 ↔ 오른발을 번갈아 눌러 달려!</p>
 </section>
 </main>
 <div id="result" class="result" hidden><div class="resultCard"><div class="resultTop"><div><small>🏁 50m 경기 종료</small><h2 id="resultTitle">결과</h2></div><div id="record" class="record">0.00s</div></div><div id="podium" class="podium"></div><div id="rows" class="rows"></div><div class="actions"><button id="retry" class="retry">한 판 더</button><button id="homeBtn" class="homeBtn">선수 선택</button></div></div></div>
 <script src="./app074.js?v=074"></script>
+<script src="./pwa.js?v=1"></script>
 </body>
 </html>
