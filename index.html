@@ -30,7 +30,6 @@
     <button id="sound" class="icon" aria-label="소리 켜기/끄기">🔊</button>
   </div>
 </header>
-
 <div class="homeLayout">
   <section class="homePanel playerPanel">
     <div class="panelHead"><h3>오늘의 선수</h3><small>PLAYER SELECT</small></div>
@@ -43,11 +42,9 @@
       <div id="chars" class="chars"></div>
     </div>
   </section>
-
   <section class="homePanel racePanel">
     <div class="raceScene" aria-label="50m 네모 달리기 경기 미리보기">
-      <div class="crowdDots"></div>
-      <div class="raceLogo">NEMO SPORTS · 50M</div>
+      <div class="crowdDots"></div><div class="raceLogo">NEMO SPORTS · 50M</div>
       <div class="raceCopy"><small>TODAY'S RACE</small><strong>50m<br>네모 달리기</strong></div>
       <div class="raceMascots" aria-hidden="true"><i class="m1"></i><i class="m2"></i><i class="m3"></i></div>
     </div>
@@ -58,13 +55,11 @@
     </div>
     <button id="startBtn" class="startBtn">🏁 경기 시작</button>
   </section>
-
   <aside class="homePanel setupPanel">
     <div class="panelHead"><h3>AI 난이도</h3><small>RIVAL LEVEL</small></div>
     <div id="difficulty" class="difficulty"></div>
     <div class="gameRule">
-      <span class="ruleLabel">HOW TO RUN</span>
-      <strong>왼발 ↔ 오른발 + 타이밍</strong>
+      <span class="ruleLabel">HOW TO RUN</span><strong>왼발 ↔ 오른발 + 타이밍</strong>
       <p>두 발을 번갈아 밟되 너무 막 누르지 마! 좋은 리듬은 가속되고, 같은 발을 연속으로 누르면 발이 꼬인다.</p>
       <div class="ruleKeys"><span>👈 왼발</span><span>오른발 👉</span></div>
     </div>
@@ -72,7 +67,6 @@
   </aside>
 </div>
 </section>
-
 <section id="game" hidden>
 <div class="gameTop"><button id="back" class="back">←</button><div class="gameTitle"><small id="round">NEMO SPORTS · 50M</small><b>50m 네모 달리기</b></div><div id="timer" class="timer">READY</div></div>
 <div class="stage"><canvas id="canvas" width="1280" height="720"></canvas><div class="hud"><div class="hudBox"><span>COMBO</span><b id="combo">0</b></div><div class="hudBox"><span>SPEED</span><b id="speed">0%</b><div class="speedBar"><i id="speedBar"></i></div></div></div><div id="msg" class="msg"></div><div class="progress"><i id="progressBar"></i><span id="progressText">0m / 50m</span></div><div id="rankBadge" class="rankBadge">4위</div></div>
@@ -80,7 +74,9 @@
 </section>
 </main>
 <div id="result" class="result" hidden><div class="resultCard"><div class="resultTop"><div><small>🏁 50m 경기 종료</small><h2 id="resultTitle">결과</h2></div><div id="record" class="record">0.00s</div></div><div id="podium" class="podium"></div><div id="rows" class="rows"></div><div class="actions"><button id="retry" class="retry">한 판 더</button><button id="homeBtn" class="homeBtn">선수 선택</button></div></div></div>
-<script src="./app080.js?v=080"></script>
+<script src="./app077.js?v=077"></script>
+<script src="./input078.js?v=078"></script>
+<script src="./challenge079.js?v=079"></script>
 <script src="./fullscreen.js?v=1"></script>
 <script src="./pwa.js?v=2"></script>
 </body>
