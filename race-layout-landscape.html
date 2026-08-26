@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
+<meta name="theme-color" content="#07111f" />
+<title>네모 운동회 · Landscape Layout Lab</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#06101d;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#fff}button{font:inherit}
+#rotate{position:fixed;inset:0;z-index:999;background:radial-gradient(circle at 50% 35%,#17395d,#07111f 65%);display:none;place-items:center;text-align:center;padding:28px}.rotateCard{max-width:420px}.phone{font-size:62px;display:block;animation:tilt 1.4s ease-in-out infinite alternate}.rotateCard h1{font-size:22px;margin:15px 0 7px}.rotateCard p{opacity:.75;line-height:1.55;margin:0}@keyframes tilt{from{transform:rotate(0deg)}to{transform:rotate(90deg)}}
+#wrap{position:fixed;inset:0;display:grid;place-items:center;background:#030916}.frame{position:relative;width:min(100vw,calc(100vh * 16 / 9));height:min(100vh,calc(100vw * 9 / 16));aspect-ratio:16/9;overflow:hidden;background:#72d4ff;box-shadow:0 0 0 1px #ffffff1a,0 20px 60px #000b}
+.sky{position:absolute;inset:0 0 42% 0;background:linear-gradient(#35b7f4 0%,#7edbff 58%,#e8fbff 100%)}
+.cloud{position:absolute;background:#fff;border-radius:999px;opacity:.9;filter:blur(.4px)}.c1{width:170px;height:42px;left:10%;top:10%}.c2{width:130px;height:34px;right:14%;top:14%}.cloud:before,.cloud:after{content:"";position:absolute;background:inherit;border-radius:50%}.cloud:before{width:66px;height:66px;left:25px;top:-28px}.cloud:after{width:86px;height:58px;right:15px;top:-19px}
+.trees{position:absolute;left:0;right:0;top:22%;height:17%;background:repeating-radial-gradient(circle at 3% 100%,#46a95e 0 28px,#378f50 29px 44px,transparent 45px 92px),linear-gradient(transparent,#3b9152)}
+.stands{position:absolute;left:0;right:0;top:31%;height:24%;background:linear-gradient(180deg,#30577f,#1e3a59 78%,#17314d)}
+.crowd{position:absolute;inset:9% 0 10% 0;background-image:radial-gradient(circle,#ffd84d 0 4px,transparent 5px),radial-gradient(circle,#ff667c 0 4px,transparent 5px),radial-gradient(circle,#65e2b5 0 4px,transparent 5px),radial-gradient(circle,#fff 0 4px,transparent 5px);background-size:34px 28px;background-position:0 0,9px 9px,18px 2px,27px 12px;opacity:.9}
+.banner{position:absolute;left:29%;top:35%;width:42%;height:11%;border:5px solid #dff2ff;border-radius:12px;background:linear-gradient(135deg,#1a76d8,#0b3f94);box-shadow:0 10px 28px #001b3e88;display:grid;place-items:center;transform:rotate(-1deg);font-weight:1000;font-size:clamp(16px,3vw,34px);letter-spacing:.05em;text-shadow:0 3px 0 #001e5b}.banner small{display:block;font-size:.35em;opacity:.85;text-align:center;margin-top:2px}
+.track{position:absolute;left:-5%;right:-5%;bottom:-6%;height:58%;background:linear-gradient(180deg,#f08363,#d95742 48%,#b23c31 100%);clip-path:polygon(9% 0,91% 0,100% 100%,0 100%)}
+.grassL,.grassR{position:absolute;bottom:-3%;height:55%;background:linear-gradient(#43a85c,#2f8847)}.grassL{left:0;width:21%;clip-path:polygon(0 0,100% 0,30% 100%,0 100%)}.grassR{right:0;width:21%;clip-path:polygon(0 0,100% 0,100% 100%,70% 100%)}
+.lane{position:absolute;bottom:-8%;height:63%;width:4px;background:#ffffffd8;transform-origin:bottom center;filter:drop-shadow(0 1px 0 #0002)}.l1{left:26%;transform:rotate(9deg)}.l2{left:42%;transform:rotate(3deg)}.l3{left:58%;transform:rotate(-3deg)}.l4{left:74%;transform:rotate(-9deg)}
+.startFade{position:absolute;left:0;right:0;bottom:0;height:19%;background:linear-gradient(transparent,#07111fd9)}
+.hud{position:absolute;left:2.1%;right:2.1%;top:2.2%;height:14%;display:flex;align-items:flex-start;gap:1.2%;pointer-events:none}.hudbox{height:74%;min-width:15%;border:4px solid #54b8ff;border-radius:18px;background:linear-gradient(180deg,#173f7c,#0a1f4a);box-shadow:inset 0 0 0 3px #082258,0 7px 0 #071632,0 10px 22px #0016387a;padding:6px 15px;transform:skew(-3deg)}.combo{border-color:#ffcc35}.combo b{color:#ffe437}.hudbox span{display:block;font-weight:1000;font-size:clamp(9px,1.5vw,18px);letter-spacing:.05em}.hudbox b{font-size:clamp(22px,4vw,48px);line-height:.88;text-shadow:0 3px 0 #001635}
+.speed{min-width:25%;display:flex;gap:10px;align-items:center}.gauge{width:48%;height:18px;border-radius:999px;background:linear-gradient(90deg,#20db94,#d8f12c,#ff9e1a,#ff4545);border:3px solid #071633;transform:skew(3deg)}.distance{margin-left:auto;min-width:18%;text-align:center}.pause{width:56px;height:56px;border-radius:50%;border:4px solid #b8ddff;background:#22599e;box-shadow:0 5px 0 #0c2e62;font-size:22px;color:#fff;font-weight:1000;pointer-events:auto}
+.rank{position:absolute;left:1.2%;top:19%;width:9.5%;display:grid;gap:5px}.rankRow{height:42px;border-radius:9px;background:#071a35d8;border:2px solid #ffffff2f;display:flex;align-items:center;gap:6px;padding:4px 7px;box-shadow:0 4px 8px #0006;font-weight:1000;font-size:clamp(8px,1.1vw,14px)}.rankRow.me{border-color:#ffd93e}.face{width:30px;height:30px;border-radius:7px;background:var(--c);display:grid;place-items:center;color:#1f1717;font-size:12px;border:2px solid #fff9}
+.runner{position:absolute;z-index:5;filter:drop-shadow(0 10px 5px #0005)}.body{position:relative;width:100%;height:100%;border-radius:22%;background:linear-gradient(145deg,var(--light),var(--c));border:4px solid #fff9;display:grid;place-items:center}.body:before,.body:after{content:"";position:absolute;width:22%;height:22%;border-radius:50%;background:var(--c);border:3px solid #fff9;top:47%}.body:before{left:-13%}.body:after{right:-13%}.leg{position:absolute;width:23%;height:26%;border-radius:50%;background:var(--c);border:3px solid #fff9;bottom:-16%}.leg.a{left:18%;transform:rotate(22deg)}.leg.b{right:18%;transform:rotate(-22deg)}.eyes{font-size:clamp(16px,3vw,34px);font-weight:1000;color:#211616;transform:translateY(-2%)}.smile{position:absolute;bottom:24%;left:50%;transform:translateX(-50%);width:22%;height:13%;border-radius:0 0 50% 50%;background:#e83f45;border:3px solid #321111}
+.r1{left:43%;top:50%;width:16%;aspect-ratio:1;--c:#f4ead8;--light:#fffef8;transform:rotate(2deg)}.r2{left:19%;top:53%;width:9%;aspect-ratio:1;--c:#8a4f2c;--light:#ba7747;transform:rotate(-5deg)}.r3{left:68%;top:50%;width:10%;aspect-ratio:1;--c:#cf553e;--light:#f2745d;transform:rotate(5deg)}.r4{left:80%;top:54%;width:9.5%;aspect-ratio:1;--c:#747f8d;--light:#aeb8c3;transform:rotate(4deg)}
+.dust{position:absolute;z-index:4;width:110px;height:35px;border-radius:50%;background:radial-gradient(ellipse,#fff9 0 30%,#fff3 31% 56%,transparent 58%);filter:blur(2px)}.d1{left:35%;top:70%;transform:rotate(-5deg)}.d2{left:13%;top:66%;transform:scale(.6)}.d3{left:63%;top:66%;transform:scale(.65)}.d4{left:75%;top:70%;transform:scale(.55)}
+.controls{position:absolute;left:2%;right:2%;bottom:2.3%;height:22%;z-index:20;display:flex;align-items:flex-end;justify-content:space-between}.foot{width:15%;aspect-ratio:1;border-radius:50%;border:6px solid #bfeaff;background:radial-gradient(circle at 38% 28%,#73d4ff,#1680e9 60%,#0756b3 61%);box-shadow:inset 0 0 0 7px #10488f,0 8px 0 #041b43,0 0 28px #0aa8ffcc;color:#fff;font-weight:1000;font-size:clamp(16px,2.3vw,30px);text-shadow:0 3px 0 #07356e}.foot.right{border-color:#ffc1d6;background:radial-gradient(circle at 38% 28%,#ff8cb4,#ed2d6d 60%,#a60e45 61%);box-shadow:inset 0 0 0 7px #8c1642,0 8px 0 #3f0620,0 0 28px #ff3f91cc}.footIcon{display:block;font-size:1.4em;line-height:1;margin-bottom:2px}.progress{position:absolute;left:25%;right:25%;bottom:4.5%;height:42px;border:5px solid #fff;border-radius:999px;background:#071a3b;box-shadow:0 6px 0 #051229,0 0 20px #0008;overflow:hidden}.bar{position:absolute;inset:5px 32% 5px 5px;border-radius:999px;background:linear-gradient(90deg,#38da9b,#d9ef35,#ffab1e,#ff4848)}.marker{position:absolute;left:62%;top:50%;transform:translate(-50%,-50%);width:36px;height:36px;border-radius:8px;background:#fff4df;border:4px solid #3d7edc;color:#333;display:grid;place-items:center;font-weight:1000}.flag{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:25px}
+.note{position:absolute;right:1.2%;bottom:25.5%;padding:6px 10px;border-radius:999px;background:#08182fbb;border:1px solid #ffffff35;font-size:clamp(7px,1vw,12px);opacity:.78}
+@media (orientation:portrait){#rotate{display:grid}#wrap{display:none}}
+</style>
+</head>
+<body>
+<div id="rotate"><div class="rotateCard"><span class="phone">📱</span><h1>경기는 가로로 플레이해요</h1><p>휴대폰을 가로로 돌려주세요.<br>홈·캐릭터 선택은 세로, 실제 경기는 16:9 가로 화면으로 설계합니다.</p></div></div>
+<div id="wrap">
+  <div class="frame" aria-label="네모 운동회 16:9 가로 경기 레이아웃 테스트">
+    <div class="sky"></div><div class="cloud c1"></div><div class="cloud c2"></div><div class="trees"></div><div class="stands"><div class="crowd"></div></div>
+    <div class="banner"><div>NEMO SPORTS<small>50M CHAMPIONSHIP</small></div></div>
+    <div class="grassL"></div><div class="grassR"></div><div class="track"></div>
+    <i class="lane l1"></i><i class="lane l2"></i><i class="lane l3"></i><i class="lane l4"></i>
+    <div class="hud">
+      <div class="hudbox combo"><span>⚡ COMBO</span><b>×4</b></div>
+      <div class="hudbox speed"><div><span>SPEED</span><b>87</b></div><div class="gauge"></div></div>
+      <div class="hudbox distance"><span>🏁 DISTANCE</span><b>32m</b></div>
+      <button class="pause">Ⅱ</button>
+    </div>
+    <div class="rank">
+      <div class="rankRow me"><b>1P</b><i class="face" style="--c:#f3ead8">•ᴗ•</i></div>
+      <div class="rankRow"><b>2P</b><i class="face" style="--c:#8a4f2c">•̀ᴗ•́</i></div>
+      <div class="rankRow"><b>3P</b><i class="face" style="--c:#cf553e">•̀_•́</i></div>
+      <div class="rankRow"><b>4P</b><i class="face" style="--c:#7a8592">◉</i></div>
+    </div>
+    <div class="dust d1"></div><div class="dust d2"></div><div class="dust d3"></div><div class="dust d4"></div>
+    <div class="runner r2"><div class="body"><span class="eyes">•̀ᴗ•́</span><i class="leg a"></i><i class="leg b"></i></div></div>
+    <div class="runner r3"><div class="body"><span class="eyes">•̀_•́</span><i class="leg a"></i><i class="leg b"></i></div></div>
+    <div class="runner r4"><div class="body"><span class="eyes">◉‿◉</span><i class="leg a"></i><i class="leg b"></i></div></div>
+    <div class="runner r1"><div class="body"><span class="eyes">◕ᴗ◕</span><i class="smile"></i><i class="leg a"></i><i class="leg b"></i></div></div>
+    <div class="startFade"></div>
+    <div class="controls">
+      <button class="foot"><span class="footIcon">👣</span>왼발</button>
+      <button class="foot right"><span class="footIcon">👣</span>오른발</button>
+    </div>
+    <div class="progress"><i class="bar"></i><b class="marker">•ᴗ•</b><span class="flag">🏁</span></div>
+    <div class="note">LANDSCAPE BLOCKOUT · 움직임 없음 · 화면 구도 확인용</div>
+  </div>
+</div>
+</body>
+</html>
