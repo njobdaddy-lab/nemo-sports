@@ -7,7 +7,6 @@
 <title>네모 운동회 · Landscape Layout Lab</title>
 <style>
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#06101d;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#fff}button{font:inherit}
-#rotate{position:fixed;inset:0;z-index:999;background:radial-gradient(circle at 50% 35%,#17395d,#07111f 65%);display:none;place-items:center;text-align:center;padding:28px}.rotateCard{max-width:420px}.phone{font-size:62px;display:block;animation:tilt 1.4s ease-in-out infinite alternate}.rotateCard h1{font-size:22px;margin:15px 0 7px}.rotateCard p{opacity:.75;line-height:1.55;margin:0}@keyframes tilt{from{transform:rotate(0deg)}to{transform:rotate(90deg)}}
 #wrap{position:fixed;inset:0;display:grid;place-items:center;background:#030916}.frame{position:relative;width:min(100vw,calc(100vh * 16 / 9));height:min(100vh,calc(100vw * 9 / 16));aspect-ratio:16/9;overflow:hidden;background:#72d4ff;box-shadow:0 0 0 1px #ffffff1a,0 20px 60px #000b}
 .sky{position:absolute;inset:0 0 42% 0;background:linear-gradient(#35b7f4 0%,#7edbff 58%,#e8fbff 100%)}
 .cloud{position:absolute;background:#fff;border-radius:999px;opacity:.9;filter:blur(.4px)}.c1{width:170px;height:42px;left:10%;top:10%}.c2{width:130px;height:34px;right:14%;top:14%}.cloud:before,.cloud:after{content:"";position:absolute;background:inherit;border-radius:50%}.cloud:before{width:66px;height:66px;left:25px;top:-28px}.cloud:after{width:86px;height:58px;right:15px;top:-19px}
@@ -27,11 +26,11 @@
 .dust{position:absolute;z-index:4;width:110px;height:35px;border-radius:50%;background:radial-gradient(ellipse,#fff9 0 30%,#fff3 31% 56%,transparent 58%);filter:blur(2px)}.d1{left:35%;top:70%;transform:rotate(-5deg)}.d2{left:13%;top:66%;transform:scale(.6)}.d3{left:63%;top:66%;transform:scale(.65)}.d4{left:75%;top:70%;transform:scale(.55)}
 .controls{position:absolute;left:2%;right:2%;bottom:2.3%;height:22%;z-index:20;display:flex;align-items:flex-end;justify-content:space-between}.foot{width:15%;aspect-ratio:1;border-radius:50%;border:6px solid #bfeaff;background:radial-gradient(circle at 38% 28%,#73d4ff,#1680e9 60%,#0756b3 61%);box-shadow:inset 0 0 0 7px #10488f,0 8px 0 #041b43,0 0 28px #0aa8ffcc;color:#fff;font-weight:1000;font-size:clamp(16px,2.3vw,30px);text-shadow:0 3px 0 #07356e}.foot.right{border-color:#ffc1d6;background:radial-gradient(circle at 38% 28%,#ff8cb4,#ed2d6d 60%,#a60e45 61%);box-shadow:inset 0 0 0 7px #8c1642,0 8px 0 #3f0620,0 0 28px #ff3f91cc}.footIcon{display:block;font-size:1.4em;line-height:1;margin-bottom:2px}.progress{position:absolute;left:25%;right:25%;bottom:4.5%;height:42px;border:5px solid #fff;border-radius:999px;background:#071a3b;box-shadow:0 6px 0 #051229,0 0 20px #0008;overflow:hidden}.bar{position:absolute;inset:5px 32% 5px 5px;border-radius:999px;background:linear-gradient(90deg,#38da9b,#d9ef35,#ffab1e,#ff4848)}.marker{position:absolute;left:62%;top:50%;transform:translate(-50%,-50%);width:36px;height:36px;border-radius:8px;background:#fff4df;border:4px solid #3d7edc;color:#333;display:grid;place-items:center;font-weight:1000}.flag{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:25px}
 .note{position:absolute;right:1.2%;bottom:25.5%;padding:6px 10px;border-radius:999px;background:#08182fbb;border:1px solid #ffffff35;font-size:clamp(7px,1vw,12px);opacity:.78}
-@media (orientation:portrait){#rotate{display:grid}#wrap{display:none}}
+.portraitHint{display:none;position:fixed;left:50%;bottom:max(24px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:30;white-space:nowrap;padding:10px 16px;border-radius:999px;background:#10233ed9;border:1px solid #ffffff26;color:#dcecff;font-weight:800;font-size:13px;box-shadow:0 8px 24px #0008}
+@media (orientation:portrait){.frame{width:100vw;height:56.25vw}.portraitHint{display:block}}
 </style>
 </head>
 <body>
-<div id="rotate"><div class="rotateCard"><span class="phone">📱</span><h1>경기는 가로로 플레이해요</h1><p>휴대폰을 가로로 돌려주세요.<br>홈·캐릭터 선택은 세로, 실제 경기는 16:9 가로 화면으로 설계합니다.</p></div></div>
 <div id="wrap">
   <div class="frame" aria-label="네모 운동회 16:9 가로 경기 레이아웃 테스트">
     <div class="sky"></div><div class="cloud c1"></div><div class="cloud c2"></div><div class="trees"></div><div class="stands"><div class="crowd"></div></div>
@@ -64,5 +63,6 @@
     <div class="note">LANDSCAPE BLOCKOUT · 움직임 없음 · 화면 구도 확인용</div>
   </div>
 </div>
+<div class="portraitHint">↻ 가로로 돌리면 더 크게 플레이할 수 있어요</div>
 </body>
 </html>
