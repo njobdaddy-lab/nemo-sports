@@ -1,0 +1,36 @@
+{
+  "name": "네모 운동회",
+  "short_name": "네모 운동회",
+  "description": "세상의 모든 네모난 물건이 선수가 되는 캐주얼 레이싱 게임",
+  "lang": "ko-KR",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["fullscreen", "standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#080d18",
+  "theme_color": "#0a1020",
+  "categories": ["games", "entertainment"],
+  "icons": [
+    {
+      "src": "./assets/nemo-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "./assets/nemo-icon-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "50m 레이스",
+      "short_name": "50m",
+      "description": "가로형 50m 레이스 화면 열기",
+      "url": "./race-layout-landscape.html"
+    }
+  ]
+}
