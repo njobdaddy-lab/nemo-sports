@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
+<meta name="theme-color" content="#06101f" />
+<title>네모 운동회 · PIXI RACE LAB v3</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;min-height:100%;background:#06101f;color:#fff;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}body{display:flex;justify-content:center}.wrap{width:min(100%,520px);padding:10px 8px 24px}.labHead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}.labHead strong{font-size:14px}.labHead span{font-size:10px;color:#a9bed7}.scene{position:relative;width:100%;aspect-ratio:9/16;overflow:hidden;border-radius:24px;background:#38b8f5 url('./assets/stadium075.svg?v=075') center 52%/cover no-repeat;box-shadow:0 18px 55px #000a;border:1px solid #ffffff20;isolation:isolate}.shade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(3,13,35,.28) 0%,rgba(3,13,35,0) 22%,rgba(3,13,35,0) 66%,rgba(2,6,18,.66) 100%);z-index:2}.pixiHost{position:absolute;inset:0;z-index:3}.pixiHost canvas{width:100%!important;height:100%!important;display:block}.hud{position:absolute;z-index:8;inset:0;pointer-events:none}.topHud{position:absolute;left:2.5%;right:2.5%;top:max(2.5%,env(safe-area-inset-top));height:9%;display:grid;grid-template-columns:1fr 1.18fr .9fr;gap:2.2%;align-items:start}.badge{height:100%;border-radius:15px;background:linear-gradient(180deg,#15365f,#071c3c);border:2px solid #63b7ff;box-shadow:inset 0 -5px 0 #0005,0 4px 0 #041329,0 8px 20px #0006;display:flex;flex-direction:column;align-items:center;justify-content:center;text-shadow:0 2px 0 #000}.combo{border-color:#ffd144}.combo small{font-weight:1000;color:#ffe55e;font-size:9px}.combo b{font-size:24px;line-height:1;color:#fff}.speed small{font-weight:900;font-size:8px;color:#d9f6ff}.gauge{width:82%;height:15px;margin:2px auto 0;border-radius:999px;background:linear-gradient(90deg,#19e3a6 0 24%,#d6ed32 24% 48%,#ffb72a 48% 70%,#ff543c 70%);border:2px solid #08182e;position:relative}.gauge:after{content:"";position:absolute;width:3px;height:18px;background:#fff;left:70%;top:-4px;transform:rotate(24deg);transform-origin:bottom;border-radius:3px;box-shadow:0 0 0 1px #13213a}.speed b{font-size:20px;line-height:1;margin-top:1px}.distance{border-color:#f4f7ff}.distance small{font-size:8px;font-weight:900;color:#e9f2ff}.distance b{font-size:20px;line-height:1;color:#ffe65d}.pause{position:absolute;right:3.2%;top:12%;width:44px;height:44px;border-radius:50%;background:#0d3266;border:3px solid #9ed9ff;box-shadow:0 4px 0 #071c3d,0 6px 16px #0007;display:grid;place-items:center;font-size:20px;font-weight:1000}.rank{position:absolute;left:1.8%;top:14.5%;display:grid;gap:4px;width:21%}.rankRow{height:34px;border-radius:10px;background:linear-gradient(90deg,rgba(6,18,40,.94),rgba(6,18,40,.58));border:1px solid #ffffff28;display:flex;align-items:center;gap:5px;padding:3px 5px;box-shadow:0 3px 8px #0005}.rankRow.me{outline:2px solid #ffd83e;background:linear-gradient(90deg,#183960e8,#163b70bf)}.rankRow b{font-size:10px;color:#fff}.mini{width:25px;height:25px;border-radius:7px;display:grid;place-items:center;color:#111;font-size:12px;font-weight:1000;border:2px solid #fff}.mini.sugar{background:#fff6e6}.mini.brown{background:#9a5c31}.mini.brick{background:#d9503e}.mini.safe{background:#7f8895}.speech{position:absolute;right:5%;top:22%;padding:8px 12px;background:#fff;color:#15213c;border:3px solid #15213c;border-radius:18px;font-weight:1000;font-size:14px;transform:rotate(-3deg);box-shadow:0 5px 12px #0004}.speech:after{content:"";position:absolute;right:18px;bottom:-12px;border-width:10px 3px 0 13px;border-style:solid;border-color:#15213c transparent transparent transparent;transform:rotate(18deg)}.progress{position:absolute;left:25%;right:25%;bottom:12.5%;height:22px;border-radius:999px;padding:4px;background:#06172f;border:3px solid #d9ecff;box-shadow:0 5px 0 #071226,0 8px 20px #0006}.progress .fill{width:64%;height:100%;border-radius:999px;background:linear-gradient(90deg,#25d9a2,#dce638 58%,#ff9c2f 78%,#ff4b55);position:relative}.progress .runnerDot{position:absolute;left:61%;top:50%;width:28px;height:28px;border-radius:8px;transform:translate(-50%,-50%);background:#fff5e5;border:3px solid #2372d7;color:#15213c;display:grid;place-items:center;font-weight:1000;font-size:10px}.progress .flag{position:absolute;right:-3px;top:-15px;font-size:28px;filter:drop-shadow(0 3px 0 #071426)}.feet{position:absolute;left:2.3%;right:2.3%;bottom:1.6%;height:14%;display:flex;justify-content:space-between;align-items:end;pointer-events:auto}.footBtn{width:30.5%;aspect-ratio:1;border:0;border-radius:50%;color:#fff;font-weight:1000;font-size:16px;text-shadow:0 2px 0 #003;box-shadow:inset 0 -10px 0 #0003,0 7px 0 #06162d,0 0 24px currentColor;display:grid;place-items:center;align-content:center;gap:2px}.footBtn.left{background:radial-gradient(circle at 38% 28%,#5ed8ff,#1284ee 55%,#0751b5);color:#8edcff}.footBtn.right{background:radial-gradient(circle at 38% 28%,#ff7cb2,#ef286d 55%,#af1049);color:#ff91bc}.footBtn span:last-child{color:white}.footIcon{position:relative;width:23px;height:31px;border-radius:55% 45% 55% 45%;background:#fff;transform:rotate(15deg);margin:0 auto 2px;filter:drop-shadow(0 2px 0 #0b2d62)}.footIcon:before{content:"";position:absolute;width:6px;height:6px;border-radius:50%;background:#fff;left:-1px;top:-6px;box-shadow:7px -3px 0 -1px #fff,13px -2px 0 -1px #fff,18px 1px 0 -1px #fff}.right .footIcon{transform:scaleX(-1) rotate(15deg)}.labTag{position:absolute;z-index:9;left:50%;bottom:17%;transform:translateX(-50%);background:#08182edc;border:1px solid #ffffff38;border-radius:999px;padding:5px 9px;font-size:8px;font-weight:900;letter-spacing:.03em;color:#dfeeff;white-space:nowrap}.loadError{position:absolute;z-index:20;inset:35% 8% auto;background:#711f2be8;border:1px solid #ff97a7;border-radius:16px;padding:14px;text-align:center;font-size:12px;display:none}.labControls{display:flex;gap:8px;margin-top:10px}.labControls button,.labControls a{flex:1;border:1px solid #ffffff22;background:#0b1c34;color:#e7f4ff;border-radius:14px;padding:11px 8px;text-align:center;text-decoration:none;font-weight:900;font-size:12px}.labControls button.active{background:#194b7d;border-color:#69bfff}.note{font-size:10px;line-height:1.55;color:#8da7c4;margin:9px 4px 0}.note b{color:#dceeff}@media (min-width:700px){.wrap{width:min(100%,650px)}.topHud{top:2%}.rankRow{height:40px}.speech{font-size:16px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="labHead"><strong>PIXI RACE LAB v3</strong><span>메인 게임 미변경 · 구도 검증용</span></div>
+  <div class="scene" id="scene">
+    <div class="shade"></div>
+    <div class="pixiHost" id="pixiHost"></div>
+    <div class="hud">
+      <div class="topHud">
+        <div class="badge combo"><small>COMBO</small><b>×4</b></div>
+        <div class="badge speed"><small>SPEED</small><div class="gauge"></div><b>87</b></div>
+        <div class="badge distance"><small>🏁 DISTANCE</small><b>32m</b><small>/ 50m</small></div>
+      </div>
+      <div class="pause">Ⅱ</div>
+      <div class="rank">
+        <div class="rankRow me"><b>1P</b><i class="mini sugar">•ᴗ•</i></div>
+        <div class="rankRow"><b>2P</b><i class="mini brown">•̀</i></div>
+        <div class="rankRow"><b>3P</b><i class="mini brick">•̀</i></div>
+        <div class="rankRow"><b>4P</b><i class="mini safe">◎</i></div>
+      </div>
+      <div class="speech">조금만 더!</div>
+      <div class="progress"><div class="fill"></div><div class="runnerDot">•ᴗ•</div><div class="flag">🏁</div></div>
+      <div class="feet"><button class="footBtn left"><span class="footIcon"></span><span>왼발</span></button><button class="footBtn right"><span class="footIcon"></span><span>오른발</span></button></div>
+      <div class="labTag">정지 구도 기준 · 움직임은 아래 버튼으로만 미리보기</div>
+    </div>
+    <div class="loadError" id="loadError">PixiJS를 불러오지 못했어. 네트워크를 확인하고 새로고침해줘.</div>
+  </div>
+  <div class="labControls"><button id="motionBtn">살짝 움직여보기</button><a href="./?v=074">메인 0.7.4</a></div>
+  <p class="note"><b>이번 테스트 포인트:</b> 화면 전체를 확대·회전하지 않음. 경기장은 고정하고, PixiJS는 선수·먼지·속도선처럼 움직여야 할 레이어만 담당.</p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/pixi.js@8.20.0/dist/pixi.min.js"></script>
+<script>
+(async()=>{
+  if(!window.PIXI){document.getElementById('loadError').style.display='block';return;}
+  const {Application,Container,Graphics}=PIXI;
+  const host=document.getElementById('pixiHost');
+  const app=new Application();
+  await app.init({width:900,height:1600,backgroundAlpha:0,antialias:true,resolution:Math.min(2,window.devicePixelRatio||1),autoDensity:true});
+  host.appendChild(app.canvas);
+  const world=new Container();app.stage.addChild(world);
+
+  const dustLayer=new Container();const runnerLayer=new Container();const fxLayer=new Container();
+  world.addChild(dustLayer,runnerLayer,fxLayer);
+
+  function shadow(x,y,w,a=.25){const g=new Graphics().ellipse(x,y,w,15).fill({color:0x07101b,alpha:a});dustLayer.addChild(g);return g}
+  function puff(x,y,s=1,c=0xfff1df){const g=new Graphics();for(let i=0;i<7;i++){const px=x-i*17+Math.sin(i*3.1)*7,py=y+(i%2)*5;g.circle(px,py,10+s*i*.7).fill({color:c,alpha:.25+.05*i});}dustLayer.addChild(g);return g}
+  function streak(x,y,len=120,c=0x62d8ff,a=.7){const g=new Graphics().moveTo(x,y).lineTo(x-len,y+5).stroke({width:5,color:c,alpha:a});fxLayer.addChild(g);return g}
+
+  function face(container,angry=false){
+    const e=new Graphics();
+    e.ellipse(-24,-7,10,15).fill(0x171316).ellipse(24,-7,10,15).fill(0x171316);
+    e.circle(-28,-12,3).fill(0xffffff).circle(20,-12,3).fill(0xffffff);
+    if(angry){e.moveTo(-38,-27).lineTo(-15,-20).stroke({width:5,color:0x2a1714});e.moveTo(38,-27).lineTo(15,-20).stroke({width:5,color:0x2a1714});}
+    const m=new Graphics().arc(0,10,15,.1,Math.PI-.1).stroke({width:5,color:0x2a1714});
+    const blush=new Graphics().ellipse(-43,17,11,6).fill({color:0xff8593,alpha:.45}).ellipse(43,17,11,6).fill({color:0xff8593,alpha:.45});
+    container.addChild(e,m,blush);
+  }
+  function limb(x,y,color,scale=1){const g=new Graphics().ellipse(x,y,18*scale,25*scale).fill(color).stroke({width:5,color:0xffffff,alpha:.78});return g}
+  function addSpecks(body,color,count=22){for(let i=0;i<count;i++){const sx=-52+(i*31%104),sy=-46+((i*47)%92);body.circle(sx,sy,1.5+(i%3)).fill({color,alpha:.23});}}
+  function runner(kind,color,scale=1){
+    const c=new Container();c.scale.set(scale);
+    const sh=shadow(0,68,70*scale,.24);c._shadow=sh;
+    const back=new Graphics();back.roundRect(-64,-58,128,118,25).fill(color).stroke({width:7,color:0xffffff,alpha:.82});
+    if(kind==='sugar'){addSpecks(back,0xd9c8ae,26);back.roundRect(-53,-49,72,18,9).fill({color:0xffffff,alpha:.20});}
+    if(kind==='brown'){addSpecks(back,0x5a321f,18);}
+    if(kind==='brick'){for(let y=-34;y<=28;y+=28)back.moveTo(-58,y).lineTo(58,y).stroke({width:3,color:0x8f3026,alpha:.7});back.moveTo(0,-34).lineTo(0,-7).stroke({width:3,color:0x8f3026,alpha:.7});back.moveTo(-28,-6).lineTo(-28,21).stroke({width:3,color:0x8f3026,alpha:.7});}
+    if(kind==='safe'){back.roundRect(-50,-43,100,90,10).stroke({width:4,color:0x343b46,alpha:.85});back.circle(7,3,22).stroke({width:6,color:0x303640});back.circle(7,3,7).fill(0xc9a75b);}
+    if(kind==='apt'){back.clear();back.roundRect(-52,-92,104,162,12).fill(color).stroke({width:7,color:0xffffff,alpha:.82});for(let yy=-61;yy<=20;yy+=28)for(let xx=-28;xx<=28;xx+=28)back.roundRect(xx-7,yy,14,18,3).fill(0x62bee8);back.roundRect(-13,39,26,31,4).fill(0x315f61);}
+    c.addChild(back);
+    const armL=limb(-72,-1,kind==='safe'?0x89939f:color,.9),armR=limb(72,-1,kind==='safe'?0x89939f:color,.9),legL=limb(-28,67,kind==='safe'?0x89939f:color,.9),legR=limb(28,67,kind==='safe'?0x89939f:color,.9);c.addChild(armL,armR,legL,legR);
+    if(kind!=='safe')face(c,kind==='brown'||kind==='brick'); else {const eyes=new Graphics().circle(-22,-18,8).fill(0x191d22).circle(22,-18,8).fill(0x191d22);c.addChild(eyes);}
+    c._parts={armL,armR,legL,legR};c._baseY=0;c._phase=Math.random()*6.28;return c;
+  }
+
+  const brown=runner('brown',0x8f522f,.82);brown.position.set(225,775);brown.rotation=-.05;
+  const brick=runner('brick',0xd44f3d,.74);brick.position.set(520,715);brick.rotation=.035;
+  const safe=runner('safe',0x7d8794,.78);safe.position.set(735,785);safe.rotation=.045;
+  const apt=runner('apt',0xe8d2ad,.62);apt.position.set(645,590);apt.rotation=.02;
+  const sugar=runner('sugar',0xfff8e9,1.42);sugar.position.set(510,1030);sugar.rotation=-.045;
+  runnerLayer.addChild(brown,brick,apt,safe,sugar);
+  [brown,brick,safe,apt,sugar].forEach(r=>{r._baseY=r.y;});
+
+  puff(190,842,.8,0xd4b28d);puff(485,782,.7,0xf4b5a7);puff(700,850,.65,0xd5dae0);puff(447,1124,1.25,0xfff5e6);
+  for(let i=0;i<8;i++)streak(395+i*16,960+i*12,120+i*8,0x5dcfff,.36);
+  for(let i=0;i<14;i++){const g=new Graphics().rect(0,0,8,18).fill([0xffd84d,0xff5e7d,0x55e1a9,0x62c9ff][i%4]);g.position.set(80+(i*71)%790,430+(i*83)%720);g.rotation=(i*.7)%3;fxLayer.addChild(g);}
+
+  let moving=false,t=0;const btn=document.getElementById('motionBtn');btn.onclick=()=>{moving=!moving;btn.classList.toggle('active',moving);btn.textContent=moving?'움직임 멈추기':'살짝 움직여보기';};
+  app.ticker.add((ticker)=>{if(!moving)return;t+=ticker.deltaMS/1000;[brown,brick,safe,apt,sugar].forEach((r,i)=>{const amp=i===4?11:6;r.y=r._baseY-Math.abs(Math.sin(t*(5.5+i*.35)+r._phase))*amp;const s=Math.sin(t*(7+i*.25)+r._phase);r._parts.armL.rotation=.45*s;r._parts.armR.rotation=-.45*s;r._parts.legL.rotation=-.35*s;r._parts.legR.rotation=.35*s;});});
+})();
+</script>
+</body>
+</html>
