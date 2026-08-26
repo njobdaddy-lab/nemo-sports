@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nemo-sports-shell-v12';
+const CACHE_NAME = 'nemo-sports-shell-v13';
 const APP_SHELL = [
   './',
   './index.html',
@@ -8,6 +8,7 @@ const APP_SHELL = [
   './challenge079.css?v=079',
   './home-v2.css?v=2',
   './app077.js?v=077',
+  './app082.js?v=082',
   './input078.js?v=078',
   './challenge079.js?v=079',
   './fullscreen.js?v=1',
