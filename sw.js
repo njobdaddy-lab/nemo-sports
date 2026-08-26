@@ -1,10 +1,11 @@
-const CACHE_NAME = 'nemo-sports-shell-v18';
+const CACHE_NAME = 'nemo-sports-shell-v19';
 const APP_SHELL = [
   './',
   './index.html',
   './style.css?v=070',
   './style076.css?v=076',
   './gameplay077.css?v=077',
+  './portrait-face087.css?v=087',
   './challenge079.css?v=079',
   './final-sprint084.css?v=084',
   './result086.css?v=086',
@@ -14,6 +15,7 @@ const APP_SHELL = [
   './input078.js?v=078',
   './challenge079.js?v=079',
   './final-sprint100.js?v=100',
+  './portrait-face087.js?v=087',
   './result086.js?v=086',
   './fullscreen.js?v=1',
   './pwa.js?v=2',
