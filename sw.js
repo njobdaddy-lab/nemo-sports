@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nemo-sports-shell-v28';
+const CACHE_NAME = 'nemo-sports-shell-v29';
 const APP_SHELL = [
   './',
   './index.html',
@@ -18,6 +18,7 @@ const APP_SHELL = [
   './portrait-layout094.css?v=094',
   './home-v2.css?v=2',
   './app083.js?v=083',
+  './app102-loader.js?v=102',
   './app101-loader.js?v=101',
   './app100-loader.js?v=100',
   './input078.js?v=078',
@@ -35,7 +36,8 @@ const APP_SHELL = [
   './pwa.js?v=2',
   './manifest.webmanifest',
   './assets/nemo-icon.svg',
-  './assets/nemo-icon-maskable.svg'
+  './assets/nemo-icon-maskable.svg',
+  './assets/sugar-run-v1.webp?v=1'
 ];
 self.addEventListener('install',(event)=>{event.waitUntil(caches.open(CACHE_NAME).then((cache)=>cache.addAll(APP_SHELL)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',(event)=>{event.waitUntil(caches.keys().then((keys)=>Promise.all(keys.filter((key)=>key!==CACHE_NAME).map((key)=>caches.delete(key)))).then(()=>self.clients.claim()))});
