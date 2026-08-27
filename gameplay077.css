@@ -1,5 +1,5 @@
 /* 0.7.7 — rhythm sprint + reaction layer */
-.timingJudge{position:absolute;z-index:19;left:50%;top:30%;transform:translate(-50%,-50%) scale(.86);opacity:0;pointer-events:none;padding:8px 14px;border-radius:999px;background:#071426e8;border:1px solid #ffffff28;color:#fff;font-weight:1000;font-size:13px;letter-spacing:.02em;transition:.14s ease}
+.timingJudge{position:absolute;z-index:19;left:50%;top:22%;transform:translate(-50%,-50%) scale(.86);opacity:0;pointer-events:none;padding:8px 14px;border-radius:999px;background:#071426e8;border:1px solid #ffffff28;color:#fff;font-weight:1000;font-size:13px;letter-spacing:.02em;transition:.14s ease}
 .timingJudge.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
 .timingJudge.perfect{color:#fff29a;box-shadow:0 0 0 2px #ffd84d44,0 8px 24px #0007}
 .timingJudge.good{color:#b8ffd7}.timingJudge.late{color:#ffe0a4}.timingJudge.miss{color:#ff9fa9}
@@ -16,5 +16,5 @@
   body.race076 .portraitReaction>span{width:54px;height:54px;display:grid;place-items:center;border-radius:18px;background:linear-gradient(145deg,#fff8dd,#f0dcc6);font-size:28px;box-shadow:inset 0 2px 0 #fff,0 5px 14px #0005}
   body.race076 .portraitReaction small{display:block;color:#8ca5c7;font-size:8px;font-weight:900;letter-spacing:.14em;margin-bottom:3px}
   body.race076 .portraitReaction b{display:block;color:#fff;font-size:16px}
-  body.race076 .timingJudge{top:43%;font-size:11px;padding:7px 11px}
+  body.race076 .timingJudge{top:38%;font-size:11px;padding:7px 11px}
 }
