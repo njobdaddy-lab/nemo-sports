@@ -22,8 +22,7 @@ function replaceBlock(src,name,nextName,code){
    ["ctx.fillText('NEMO SPORTS · 50M',W/2,233)","ctx.fillText('NEMO SPORTS · 100M',W/2,233)"],
    ["for(let m=0;m<=50;m+=5)","for(let m=0;m<=LEN;m+=10)"],
    ["const x=wx(50)","const x=wx(LEN)"],
-   ["ctx.fillText(`${r.reactFace} ${r.reactText}`,-0,-94);","ctx.fillText(r.reactText,-0,-94);"],
-   ["const A={body:img(svgBody),arm:img(svgArm),leg:img(svgLeg),eyes:img(svgEyes),mouth:img(svgMouth)};","const A={body:img(svgBody),arm:img(svgArm),leg:img(svgLeg),eyes:img(svgEyes),mouth:img(svgMouth)};const sugarRunSprite=new Image();sugarRunSprite.decoding='async';sugarRunSprite.src='./assets/sugar-run-v2.webp?v=3';"]
+   ["ctx.fillText(`${r.reactFace} ${r.reactText}`,-0,-94);","ctx.fillText(r.reactText,-0,-94);"]
   ];
   for(const [from,to] of patches){if(!src.includes(from))throw new Error('102 patch target missing: '+from.slice(0,48));src=src.replace(from,to);}
 
@@ -61,7 +60,7 @@ function replaceBlock(src,name,nextName,code){
   src=replaceBlock(src,'motionStyle','drawMotionCue',`function motionStyle(r,running,hurt){
  if(!running||hurt)return{x:0,y:0,rot:0,stride:1,squash:0};
  const p=r.phase,c=r.char.type;
- if(c==='sugar')return{x:Math.sin(p*.52)*.35,y:-Math.abs(Math.sin(p))*1.2,rot:Math.sin(p)*.010,stride:1.00,squash:0};
+ if(c==='sugar')return{x:Math.sin(p*.52)*.55,y:-Math.abs(Math.sin(p))*1.4,rot:Math.sin(p*.52)*.018,stride:1.00,squash:Math.max(0,Math.cos(p*2))*.010};
  if(c==='brown')return{x:Math.sin(p*1.05)*1.1,y:-Math.abs(Math.sin(p*1.36))*3.4,rot:Math.sin(p*1.18)*.024,stride:1.20,squash:Math.max(0,Math.cos(p*2.72))*.024};
  if(c==='brick')return{x:Math.sin(p*.72)*.25,y:-Math.abs(Math.sin(p*.72))*1.35,rot:Math.sin(p*.72)*.018,stride:.52,squash:Math.max(0,Math.cos(p*1.44))*.052};
  if(c==='safe')return{x:Math.sin(p*.70)*3.4,y:-Math.abs(Math.sin(p*.68))*2.0,rot:Math.sin(p*.70)*.105,stride:.62,squash:.012};
@@ -89,19 +88,40 @@ function replaceBlock(src,name,nextName,code){
 }`);
 
   src=replaceBlock(src,'sugar','simple',`function sugar(r,now,me,running,hurt,m){
- const cell=120,d=me?120:104;
- if(sugarRunSprite.complete&&sugarRunSprite.naturalWidth>=cell*8&&sugarRunSprite.naturalHeight>=cell){
-  const frame=running&&!hurt?Math.floor(Math.abs(r.phase*.56))%8:0;
-  ctx.save();
-  const ang=hurt?fall(r,now):0;
-  ctx.rotate(ang);
-  ctx.fillStyle='rgba(0,0,0,.20)';ctx.beginPath();ctx.ellipse(-2,d*.32,d*.34,6,0,0,Math.PI*2);ctx.fill();
-  ctx.imageSmoothingEnabled=true;
-  ctx.drawImage(sugarRunSprite,frame*cell,0,cell,cell,-d*.50,-d*.66,d,d);
-  ctx.restore();
-  return;
+ const s=me?.42:.36,bw=220*s,bh=220*s,p=r.phase;
+ const stride=running&&!hurt?Math.sin(p)*(m?.stride||1):0;
+ const leftLift=running&&!hurt?Math.max(0,Math.sin(p))*5:0;
+ const rightLift=running&&!hurt?Math.max(0,-Math.sin(p))*5:0;
+ const ang=hurt?fall(r,now):0;
+ const hit=Math.max(0,1-(now-(r.kick||0))/120);
+ ctx.save();ctx.rotate(ang);
+ ctx.fillStyle='rgba(0,0,0,.20)';ctx.beginPath();ctx.ellipse(-2,bh*.52,bw*.37,6,0,0,Math.PI*2);ctx.fill();
+ const hipX=bw*.18,hipY=bh*.33,footY=bh*.52;
+ const shoulderX=bw*.45,shoulderY=-bh*.02;
+ const legTravel=stride*10,armTravel=stride*8;
+ ctx.strokeStyle='#161719';ctx.fillStyle='#161719';ctx.lineWidth=Math.max(3.2,bw*.047);ctx.lineCap='round';ctx.lineJoin='round';
+ const legs=[[-hipX,-1,leftLift],[hipX,1,rightLift]];
+ for(const [hx,sgn,lift] of legs){
+  const fx=hx+sgn*legTravel,fy=footY-lift;
+  ctx.beginPath();ctx.moveTo(hx,hipY);ctx.lineTo(fx,fy-1);ctx.stroke();
+  ctx.beginPath();ctx.ellipse(fx+sgn*1.5,fy+1,5.2,3.7,sgn*stride*.08,0,Math.PI*2);ctx.fill();
  }
- const s=me?.42:.36,bw=220*s,bh=220*s,stride=running&&!hurt?Math.sin(r.phase)*(m?.stride||1):0,ang=hurt?fall(r,now):Math.min(.11,r.vel/78),hit=Math.max(0,1-(now-(r.kick||0))/120);ctx.save();ctx.rotate(ang);ctx.fillStyle='rgba(0,0,0,.22)';ctx.beginPath();ctx.ellipse(-5,bh*.5+8,bw*.42,7,0,0,7);ctx.fill();const armS=s*.66,legS=s*.62,sy=-bh*.03,sx=bw*.44,hy=bh*.35,hx=bw*.18;let al=-stride*.78,ar=stride*.78,ll=stride*.7,lr=-stride*.7;if(hurt){al=-1.05;ar=.92;ll=.18;lr=-.22}pimg(A.leg,-hx,hy,legS,ll,.5,.12);pimg(A.leg,hx,hy,legS,lr,.5,.12);pimg(A.arm,-sx,sy,armS,al,.52,.16);ctx.save();ctx.scale(-1,1);pimg(A.arm,-sx,sy,armS,-ar,.52,.16);ctx.restore();ctx.save();ctx.scale(1+hit*.028,1-hit*.036);pimg(A.body,0,0,s);ctx.restore();if(hurt){ctx.strokeStyle='#20191a';ctx.lineWidth=3.5;for(const q of [-1,1]){const ex=q*bw*.15,ey=-bh*.05;ctx.beginPath();ctx.moveTo(ex-4,ey-4);ctx.lineTo(ex+4,ey+4);ctx.moveTo(ex+4,ey-4);ctx.lineTo(ex-4,ey+4);ctx.stroke()}ctx.fillStyle='#b6282d';ctx.beginPath();ctx.ellipse(0,bh*.14,7,5,0,0,7);ctx.fill()}else{pimg(A.eyes,0,-bh*.05,s*.54);pimg(A.mouth,0,bh*.12,s*.48);ctx.fillStyle='#ff7d88aa';ctx.beginPath();ctx.ellipse(-bw*.27,bh*.08,4,2.7,0,0,7);ctx.ellipse(bw*.27,bh*.08,4,2.7,0,0,7);ctx.fill();emotionMarks(r,now,bw,bh)}ctx.restore()
+ const arms=[[-shoulderX,-1],[shoulderX,1]];
+ for(const [ax,sgn] of arms){
+  const handX=ax-sgn*armTravel,handY=shoulderY+10+Math.abs(stride)*1.5;
+  ctx.beginPath();ctx.moveTo(ax,shoulderY);ctx.lineTo(handX,handY);ctx.stroke();
+  ctx.beginPath();ctx.arc(handX,handY,4.4,0,Math.PI*2);ctx.fill();
+ }
+ ctx.save();ctx.scale(1+hit*.026,1-hit*.034);pimg(A.body,0,0,s);ctx.restore();
+ if(hurt){
+  ctx.strokeStyle='#20191a';ctx.lineWidth=3.5;for(const q of [-1,1]){const ex=q*bw*.15,ey=-bh*.05;ctx.beginPath();ctx.moveTo(ex-4,ey-4);ctx.lineTo(ex+4,ey+4);ctx.moveTo(ex+4,ey-4);ctx.lineTo(ex-4,ey+4);ctx.stroke()}
+  ctx.fillStyle='#b6282d';ctx.beginPath();ctx.ellipse(0,bh*.14,7,5,0,0,Math.PI*2);ctx.fill();
+ }else{
+  pimg(A.eyes,0,-bh*.05,s*.54);pimg(A.mouth,0,bh*.12,s*.48);
+  ctx.fillStyle='#ff7d88aa';ctx.beginPath();ctx.ellipse(-bw*.27,bh*.08,4,2.7,0,0,Math.PI*2);ctx.ellipse(bw*.27,bh*.08,4,2.7,0,0,Math.PI*2);ctx.fill();
+  emotionMarks(r,now,bw,bh);
+ }
+ ctx.restore();
 }`);
 
   src=replaceBlock(src,'simple','emotionMarks',`function simple(r,now,me,running,hurt,m){
