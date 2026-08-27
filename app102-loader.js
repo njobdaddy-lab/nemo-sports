@@ -22,7 +22,7 @@ function replaceBlock(src,name,nextName,code){
    ["ctx.fillText('NEMO SPORTS · 50M',W/2,233)","ctx.fillText('NEMO SPORTS · 100M',W/2,233)"],
    ["for(let m=0;m<=50;m+=5)","for(let m=0;m<=LEN;m+=10)"],
    ["const x=wx(50)","const x=wx(LEN)"],
-   ["const A={body:img(svgBody),arm:img(svgArm),leg:img(svgLeg),eyes:img(svgEyes),mouth:img(svgMouth)};","const A={body:img(svgBody),arm:img(svgArm),leg:img(svgLeg),eyes:img(svgEyes),mouth:img(svgMouth)};const sugarRunSprite=new Image();sugarRunSprite.decoding='async';sugarRunSprite.src='./assets/sugar-run-v1.webp?v=1';"]
+   ["const A={body:img(svgBody),arm:img(svgArm),leg:img(svgLeg),eyes:img(svgEyes),mouth:img(svgMouth)};","const A={body:img(svgBody),arm:img(svgArm),leg:img(svgLeg),eyes:img(svgEyes),mouth:img(svgMouth)};const sugarRunSprite=new Image();sugarRunSprite.decoding='async';sugarRunSprite.src='./assets/sugar-run-v1.webp?v=2';"]
   ];
   for(const [from,to] of patches){if(!src.includes(from))throw new Error('102 patch target missing: '+from.slice(0,48));src=src.replace(from,to);}
 
@@ -60,7 +60,7 @@ function replaceBlock(src,name,nextName,code){
   src=replaceBlock(src,'motionStyle','drawMotionCue',`function motionStyle(r,running,hurt){
  if(!running||hurt)return{x:0,y:0,rot:0,stride:1,squash:0};
  const p=r.phase,c=r.char.type;
- if(c==='sugar')return{x:Math.sin(p*.52)*.55,y:-Math.abs(Math.sin(p))*5.6,rot:Math.sin(p)*.018,stride:1.05,squash:0};
+ if(c==='sugar')return{x:Math.sin(p*.52)*.35,y:-Math.abs(Math.sin(p))*1.2,rot:Math.sin(p)*.010,stride:1.00,squash:0};
  if(c==='brown')return{x:Math.sin(p*1.05)*1.1,y:-Math.abs(Math.sin(p*1.36))*3.4,rot:Math.sin(p*1.18)*.024,stride:1.20,squash:Math.max(0,Math.cos(p*2.72))*.024};
  if(c==='brick')return{x:Math.sin(p*.72)*.25,y:-Math.abs(Math.sin(p*.72))*1.35,rot:Math.sin(p*.72)*.018,stride:.52,squash:Math.max(0,Math.cos(p*1.44))*.052};
  if(c==='safe')return{x:Math.sin(p*.70)*3.4,y:-Math.abs(Math.sin(p*.68))*2.0,rot:Math.sin(p*.70)*.105,stride:.62,squash:.012};
@@ -89,7 +89,7 @@ function replaceBlock(src,name,nextName,code){
 
   src=replaceBlock(src,'sugar','simple',`function sugar(r,now,me,running,hurt,m){
  if(sugarRunSprite.complete&&sugarRunSprite.naturalWidth){
-  const cell=68,frame=running&&!hurt?Math.floor(Math.abs(r.phase*.72))%8:0,d=me?116:100;
+  const cell=68,frame=running&&!hurt?Math.floor(Math.abs(r.phase*.56))%8:(hurt?6:0),d=me?120:104;
   ctx.save();
   const ang=hurt?fall(r,now):0;
   ctx.rotate(ang);
