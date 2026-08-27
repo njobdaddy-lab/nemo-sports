@@ -11,10 +11,6 @@
   body.race076 .foot{width:25%;height:58px}
   body.race076 .portraitTip{display:block;position:absolute;z-index:24;left:50%;top:18%;transform:translateX(-50%);width:min(88%,560px);padding:9px 13px;border-radius:999px;background:#0d1c34d9;border:1px solid #ffffff1f;color:#c9d6ea;text-align:center;font-size:12px;line-height:1.25;backdrop-filter:blur(7px);box-shadow:0 8px 22px #0004}
   body.race076 .portraitTip b{color:#fff2a7}
-  body.race076 .portraitReaction{display:flex;position:absolute;z-index:23;left:50%;top:72%;transform:translate(-50%,-50%);align-items:center;gap:12px;width:min(76%,430px);padding:12px 16px;border-radius:22px;background:#0a1830e5;border:1px solid #ffffff20;box-shadow:0 10px 30px #0006;backdrop-filter:blur(8px);transition:.18s ease}
-  body.race076 .portraitReaction.active{transform:translate(-50%,-50%) scale(1.05);box-shadow:0 0 0 3px #ffd84d2f,0 14px 34px #0008}
-  body.race076 .portraitReaction>span{width:54px;height:54px;display:grid;place-items:center;border-radius:18px;background:linear-gradient(145deg,#fff8dd,#f0dcc6);font-size:28px;box-shadow:inset 0 2px 0 #fff,0 5px 14px #0005}
-  body.race076 .portraitReaction small{display:block;color:#8ca5c7;font-size:8px;font-weight:900;letter-spacing:.14em;margin-bottom:3px}
-  body.race076 .portraitReaction b{display:block;color:#fff;font-size:16px}
+  body.race076 .portraitReaction{display:none!important}
   body.race076 .timingJudge{top:38%;font-size:11px;padding:7px 11px}
 }
