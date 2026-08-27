@@ -89,17 +89,17 @@ function replaceBlock(src,name,nextName,code){
 
   src=replaceBlock(src,'sugar','simple',`function sugar(r,now,me,running,hurt,m){
  const bodyS=me?.38:.33,bw=220*bodyS,bh=220*bodyS,p=r.phase;
- const rigW=me?92:80,rigH=me?92:80;
+ const rigW=me?92:80,rigH=me?82:72;
  const stride=running&&!hurt?Math.sin(p)*(m?.stride||1):0;
- const leftLift=running&&!hurt?Math.max(0,Math.sin(p))*7:0;
- const rightLift=running&&!hurt?Math.max(0,-Math.sin(p))*7:0;
+ const leftLift=running&&!hurt?Math.max(0,Math.sin(p))*5.5:0;
+ const rightLift=running&&!hurt?Math.max(0,-Math.sin(p))*5.5:0;
  const ang=hurt?fall(r,now):0;
  const hit=Math.max(0,1-(now-(r.kick||0))/120);
  ctx.save();ctx.rotate(ang);
  ctx.fillStyle='rgba(0,0,0,.20)';ctx.beginPath();ctx.ellipse(-2,rigH*.72,rigW*.34,6,0,0,Math.PI*2);ctx.fill();
- const hipX=rigW*.20,hipY=bh*.32,footY=rigH*.69;
+ const hipX=rigW*.20,hipY=bh*.32,footY=rigH*.63;
  const shoulderX=bw*.50,shoulderY=-bh*.02;
- const legTravel=stride*11;
+ const legTravel=stride*9;
  ctx.strokeStyle='#161719';ctx.fillStyle='#161719';ctx.lineWidth=me?3.6:3.2;ctx.lineCap='round';ctx.lineJoin='round';
  const legs=[[-hipX,-1,leftLift],[hipX,1,rightLift]];
  for(const [hx,sgn,lift] of legs){
