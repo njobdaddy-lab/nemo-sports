@@ -22,6 +22,7 @@ function replaceBlock(src,name,nextName,code){
    ["ctx.fillText('NEMO SPORTS · 50M',W/2,233)","ctx.fillText('NEMO SPORTS · 100M',W/2,233)"],
    ["for(let m=0;m<=50;m+=5)","for(let m=0;m<=LEN;m+=10)"],
    ["const x=wx(50)","const x=wx(LEN)"],
+   ["ctx.fillText(`${r.reactFace} ${r.reactText}`,-0,-94);","ctx.fillText(r.reactText,-0,-94);"],
    ["const A={body:img(svgBody),arm:img(svgArm),leg:img(svgLeg),eyes:img(svgEyes),mouth:img(svgMouth)};","const A={body:img(svgBody),arm:img(svgArm),leg:img(svgLeg),eyes:img(svgEyes),mouth:img(svgMouth)};const sugarRunSprite=new Image();sugarRunSprite.decoding='async';sugarRunSprite.src='./assets/sugar-run-v1.webp?v=2';"]
   ];
   for(const [from,to] of patches){if(!src.includes(from))throw new Error('102 patch target missing: '+from.slice(0,48));src=src.replace(from,to);}
