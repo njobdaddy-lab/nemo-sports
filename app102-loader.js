@@ -23,7 +23,7 @@ function replaceBlock(src,name,nextName,code){
    ["for(let m=0;m<=50;m+=5)","for(let m=0;m<=LEN;m+=10)"],
    ["const x=wx(50)","const x=wx(LEN)"],
    ["ctx.fillText(`${r.reactFace} ${r.reactText}`,-0,-94);","ctx.fillText(r.reactText,-0,-94);"],
-   ["const A={body:img(svgBody),arm:img(svgArm),leg:img(svgLeg),eyes:img(svgEyes),mouth:img(svgMouth)};","const A={body:img(svgBody),arm:img(svgArm),leg:img(svgLeg),eyes:img(svgEyes),mouth:img(svgMouth)};const sugarRunSprite=new Image();sugarRunSprite.decoding='async';sugarRunSprite.src='./assets/sugar-run-v1.webp?v=2';"]
+   ["const A={body:img(svgBody),arm:img(svgArm),leg:img(svgLeg),eyes:img(svgEyes),mouth:img(svgMouth)};","const A={body:img(svgBody),arm:img(svgArm),leg:img(svgLeg),eyes:img(svgEyes),mouth:img(svgMouth)};const sugarRunSprite=new Image();sugarRunSprite.decoding='async';sugarRunSprite.src='./assets/sugar-run-v2.webp?v=3';"]
   ];
   for(const [from,to] of patches){if(!src.includes(from))throw new Error('102 patch target missing: '+from.slice(0,48));src=src.replace(from,to);}
 
@@ -89,8 +89,9 @@ function replaceBlock(src,name,nextName,code){
 }`);
 
   src=replaceBlock(src,'sugar','simple',`function sugar(r,now,me,running,hurt,m){
- if(sugarRunSprite.complete&&sugarRunSprite.naturalWidth){
-  const cell=68,frame=running&&!hurt?Math.floor(Math.abs(r.phase*.56))%8:(hurt?6:0),d=me?120:104;
+ const cell=120,d=me?120:104;
+ if(sugarRunSprite.complete&&sugarRunSprite.naturalWidth>=cell*8&&sugarRunSprite.naturalHeight>=cell){
+  const frame=running&&!hurt?Math.floor(Math.abs(r.phase*.56))%8:0;
   ctx.save();
   const ang=hurt?fall(r,now):0;
   ctx.rotate(ang);
