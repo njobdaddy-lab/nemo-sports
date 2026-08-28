@@ -31,7 +31,6 @@ controls.minPolarAngle = Math.PI * 0.24;
 controls.enablePan = false;
 controls.update();
 
-// Soft outdoor/studio hybrid lighting.
 scene.add(new THREE.HemisphereLight(0xf8fcff, 0xb8aa8e, 2.35));
 const key = new THREE.DirectionalLight(0xfff7e8, 4.4);
 key.position.set(3.8, 6.2, 4.4);
@@ -52,7 +51,6 @@ const rim = new THREE.DirectionalLight(0xffffff, 1.4);
 rim.position.set(0, 4, -5);
 scene.add(rim);
 
-// Ground / miniature display platform.
 const ground = new THREE.Mesh(
   new THREE.CircleGeometry(7, 96),
   new THREE.MeshStandardMaterial({ color: 0xdce7cd, roughness: 0.92, metalness: 0 })
@@ -120,7 +118,9 @@ const mats = {
   eye: new THREE.MeshPhysicalMaterial({ color: 0x08090b, roughness: 0.16, clearcoat: 0.8, clearcoatRoughness: 0.12 }),
   eyeGlow: new THREE.MeshBasicMaterial({ color: 0xffffff }),
   cheek: new THREE.MeshStandardMaterial({ color: 0xf0a5a8, roughness: 0.75, transparent: true, opacity: 0.82 }),
-  mouth: new THREE.MeshStandardMaterial({ color: 0x321c1b, roughness: 0.6 })
+  mouth: new THREE.MeshStandardMaterial({ color: 0x321c1b, roughness: 0.6 }),
+  tongue: new THREE.MeshStandardMaterial({ color: 0xe87983, roughness: 0.72 }),
+  star: new THREE.MeshStandardMaterial({ color: 0xffd85a, roughness: 0.42, emissive: 0x6b4500, emissiveIntensity: 0.12 })
 };
 
 const character = new THREE.Group();
@@ -134,7 +134,6 @@ const body = mesh(new RoundedBoxGeometry(1.42, 1.42, 1.42, 8, 0.12), mats.sugar)
 body.position.y = 1.17;
 bodyRig.add(body);
 
-// Face is built in real 3D so it stays attached when camera moves.
 const face = new THREE.Group();
 face.position.set(0, 1.24, 0.712);
 bodyRig.add(face);
@@ -155,6 +154,22 @@ function createEye(x) {
 const eyeL = createEye(-0.235);
 const eyeR = createEye(0.235);
 
+function createXEye(x) {
+  const holder = new THREE.Group();
+  holder.position.set(x, 0.12, 0.075);
+  for (const angle of [-0.72, 0.72]) {
+    const bar = mesh(new RoundedBoxGeometry(0.17, 0.027, 0.032, 4, 0.012), mats.black, false);
+    bar.rotation.z = angle;
+    holder.add(bar);
+  }
+  holder.visible = false;
+  face.add(holder);
+  return holder;
+}
+
+const xEyeL = createXEye(-0.235);
+const xEyeR = createXEye(0.235);
+
 function createBrow(x) {
   const brow = mesh(new RoundedBoxGeometry(0.19, 0.035, 0.035, 4, 0.015), mats.black, false);
   brow.position.set(x, 0.325, 0.05);
@@ -162,20 +177,62 @@ function createBrow(x) {
   face.add(brow);
   return brow;
 }
-createBrow(-0.235);
-createBrow(0.235);
 
-const mouth = mesh(new THREE.TorusGeometry(0.12, 0.025, 12, 32, Math.PI), mats.mouth, false);
-mouth.position.set(0, -0.17, 0.06);
-mouth.rotation.z = Math.PI;
-face.add(mouth);
+const browL = createBrow(-0.235);
+const browR = createBrow(0.235);
 
+const smileMouth = mesh(new THREE.TorusGeometry(0.12, 0.025, 12, 32, Math.PI), mats.mouth, false);
+smileMouth.position.set(0, -0.17, 0.06);
+smileMouth.rotation.z = Math.PI;
+face.add(smileMouth);
+
+const effortMouth = mesh(new THREE.SphereGeometry(0.075, 22, 16), mats.mouth, false);
+effortMouth.position.set(0, -0.18, 0.065);
+effortMouth.scale.set(0.72, 0.90, 0.30);
+effortMouth.visible = false;
+face.add(effortMouth);
+
+const shockMouth = mesh(new THREE.TorusGeometry(0.075, 0.021, 12, 28), mats.mouth, false);
+shockMouth.position.set(0, -0.18, 0.067);
+shockMouth.scale.set(0.78, 1.16, 0.38);
+shockMouth.visible = false;
+face.add(shockMouth);
+
+const grimaceMouth = mesh(new RoundedBoxGeometry(0.19, 0.034, 0.035, 4, 0.012), mats.mouth, false);
+grimaceMouth.position.set(0, -0.17, 0.066);
+grimaceMouth.visible = false;
+face.add(grimaceMouth);
+
+const victoryMouth = new THREE.Group();
+victoryMouth.position.set(0, -0.17, 0.065);
+const victoryCavity = mesh(new THREE.SphereGeometry(0.105, 22, 16), mats.mouth, false);
+victoryCavity.scale.set(0.95, 1.12, 0.30);
+victoryMouth.add(victoryCavity);
+const tongue = mesh(new THREE.SphereGeometry(0.057, 18, 12), mats.tongue, false);
+tongue.position.set(0, -0.045, 0.031);
+tongue.scale.set(1.0, 0.48, 0.25);
+victoryMouth.add(tongue);
+victoryMouth.visible = false;
+face.add(victoryMouth);
+
+const cheeks = [];
 for (const x of [-0.405, 0.405]) {
   const cheek = mesh(new THREE.SphereGeometry(0.09, 20, 14), mats.cheek, false);
   cheek.position.set(x, -0.095, 0.035);
   cheek.scale.set(1.25, 0.60, 0.25);
   face.add(cheek);
+  cheeks.push(cheek);
 }
+
+const dizzyFX = new THREE.Group();
+dizzyFX.position.set(0, 2.02, 0.02);
+bodyRig.add(dizzyFX);
+for (const [x, y, s] of [[-0.42, 0.03, 0.07], [0.02, 0.16, 0.055], [0.42, -0.01, 0.065]]) {
+  const star = mesh(new THREE.OctahedronGeometry(s, 0), mats.star, false);
+  star.position.set(x, y, 0.04);
+  dizzyFX.add(star);
+}
+dizzyFX.visible = false;
 
 const limbGeo = new THREE.CapsuleGeometry(0.045, 0.28, 5, 10);
 const handGeo = new THREE.SphereGeometry(0.105, 22, 16);
@@ -216,7 +273,6 @@ const armR = createArm(1);
 const legL = createLeg(-1);
 const legR = createLeg(1);
 
-// A soft blob shadow helps the character feel planted even before full game art exists.
 const blobShadow = new THREE.Mesh(
   new THREE.CircleGeometry(0.62, 48),
   new THREE.MeshBasicMaterial({ color: 0x172033, transparent: true, opacity: 0.12, depthWrite: false })
@@ -256,6 +312,117 @@ for (const id of ['speed', 'waddle', 'stride']) {
   });
 }
 
+function resetFace() {
+  eyeL.visible = true;
+  eyeR.visible = true;
+  xEyeL.visible = false;
+  xEyeR.visible = false;
+  eyeL.scale.set(1, 1, 1);
+  eyeR.scale.set(1, 1, 1);
+  eyeL.rotation.set(0, 0, 0);
+  eyeR.rotation.set(0, 0, 0);
+  browL.position.set(-0.235, 0.325, 0.05);
+  browR.position.set(0.235, 0.325, 0.05);
+  browL.rotation.z = -0.05;
+  browR.rotation.z = 0.05;
+  smileMouth.visible = true;
+  effortMouth.visible = false;
+  shockMouth.visible = false;
+  grimaceMouth.visible = false;
+  victoryMouth.visible = false;
+  dizzyFX.visible = false;
+  cheeks.forEach(c => {
+    c.scale.set(1.25, 0.60, 0.25);
+    c.material.opacity = 0.82;
+  });
+}
+
+function showOnlyMouth(which) {
+  smileMouth.visible = which === 'smile';
+  effortMouth.visible = which === 'effort';
+  shockMouth.visible = which === 'shock';
+  grimaceMouth.visible = which === 'grimace';
+  victoryMouth.visible = which === 'victory';
+}
+
+function faceRun() {
+  eyeL.scale.set(1.03, 1.04, 1);
+  eyeR.scale.set(1.03, 1.04, 1);
+  browL.rotation.z = -0.19;
+  browR.rotation.z = 0.19;
+  browL.position.y = 0.31;
+  browR.position.y = 0.31;
+  showOnlyMouth('effort');
+  cheeks.forEach(c => {
+    c.scale.set(1.34, 0.64, 0.25);
+    c.material.opacity = 0.92;
+  });
+}
+
+function facePanic() {
+  eyeL.scale.set(1.11, 1.13, 1);
+  eyeR.scale.set(1.11, 1.13, 1);
+  browL.position.y = 0.37;
+  browR.position.y = 0.37;
+  browL.rotation.z = 0.12;
+  browR.rotation.z = -0.12;
+  showOnlyMouth('shock');
+}
+
+function faceImpact() {
+  eyeL.scale.set(1.02, 0.13, 1);
+  eyeR.scale.set(1.02, 0.13, 1);
+  browL.position.y = 0.285;
+  browR.position.y = 0.285;
+  browL.rotation.z = -0.28;
+  browR.rotation.z = 0.28;
+  showOnlyMouth('grimace');
+  cheeks.forEach(c => { c.material.opacity = 0.66; });
+}
+
+function faceDazed(t) {
+  eyeL.visible = false;
+  eyeR.visible = false;
+  xEyeL.visible = true;
+  xEyeR.visible = true;
+  browL.position.y = 0.30;
+  browR.position.y = 0.30;
+  browL.rotation.z = -0.10;
+  browR.rotation.z = 0.10;
+  showOnlyMouth('shock');
+  shockMouth.scale.set(0.68, 0.76, 0.32);
+  dizzyFX.visible = true;
+  dizzyFX.rotation.y = t * 2.8;
+  dizzyFX.children.forEach((star, i) => {
+    star.rotation.x = t * (2.1 + i * 0.35);
+    star.rotation.z = -t * (1.6 + i * 0.28);
+  });
+  cheeks.forEach(c => { c.material.opacity = 0.54; });
+}
+
+function faceRecover(k) {
+  eyeL.scale.set(1, 0.58 + k * 0.42, 1);
+  eyeR.scale.set(1, 0.58 + k * 0.42, 1);
+  browL.rotation.z = -0.20 * (1 - k) - 0.05 * k;
+  browR.rotation.z = 0.20 * (1 - k) + 0.05 * k;
+  if (k < 0.65) showOnlyMouth('grimace');
+  else showOnlyMouth('smile');
+}
+
+function faceVictory() {
+  eyeL.scale.set(1.06, 0.84, 1);
+  eyeR.scale.set(1.06, 0.84, 1);
+  browL.position.y = 0.36;
+  browR.position.y = 0.36;
+  browL.rotation.z = 0.08;
+  browR.rotation.z = -0.08;
+  showOnlyMouth('victory');
+  cheeks.forEach(c => {
+    c.scale.set(1.42, 0.68, 0.25);
+    c.material.opacity = 0.98;
+  });
+}
+
 function resetPose() {
   character.position.set(0, 0.12, 0);
   character.rotation.set(0, 0, 0);
@@ -268,6 +435,7 @@ function resetPose() {
   legR.rotation.set(0, 0, 0);
   blobShadow.scale.set(1, 1, 1);
   blobShadow.material.opacity = 0.12;
+  shockMouth.scale.set(1, 1, 1);
 }
 
 function animateIdle(t) {
@@ -280,90 +448,135 @@ function animateIdle(t) {
 }
 
 function animateRun(t) {
-  const p = t * 12.5 * tune.speed;
+  faceRun();
+  const p = t * 16.0 * tune.speed;
   const step = Math.sin(p);
   const hop = Math.abs(Math.sin(p));
-  const half = Math.sin(p * 0.5);
-  const legSwing = 0.44 * tune.stride;
+  const quickWaddle = Math.sin(p * 0.5);
+  const legSwing = 0.30 * tune.stride;
 
   legL.rotation.x = step * legSwing;
   legR.rotation.x = -step * legSwing;
-  armL.rotation.x = -step * 0.20;
-  armR.rotation.x = step * 0.20;
-  armL.rotation.z = -0.08;
-  armR.rotation.z = 0.08;
+  legL.rotation.z = -0.025 - Math.max(0, -step) * 0.045;
+  legR.rotation.z = 0.025 + Math.max(0, step) * 0.045;
 
-  character.position.y = 0.12 + hop * 0.055;
-  character.rotation.z = half * 0.055 * tune.waddle;
-  character.rotation.y = half * 0.026 * tune.waddle;
-  bodyRig.rotation.z = half * 0.025 * tune.waddle;
+  armL.rotation.x = -step * 0.12;
+  armR.rotation.x = step * 0.12;
+  armL.rotation.z = -0.16 - step * 0.025;
+  armR.rotation.z = 0.16 - step * 0.025;
 
-  const squash = Math.max(0, Math.cos(p * 2)) * 0.018;
-  character.scale.set(1 + squash, 1 - squash * 1.45, 1 + squash * 0.45);
-  blobShadow.scale.set(1 - hop * 0.12, 1 - hop * 0.12, 1);
-  blobShadow.material.opacity = 0.13 - hop * 0.035;
+  character.position.y = 0.12 + hop * 0.038;
+  character.rotation.z = quickWaddle * 0.052 * tune.waddle;
+  character.rotation.y = quickWaddle * 0.020 * tune.waddle;
+  bodyRig.position.x = step * 0.018 * tune.waddle;
+  bodyRig.rotation.x = -0.038;
+  bodyRig.rotation.z = quickWaddle * 0.022 * tune.waddle;
+
+  const squash = Math.max(0, Math.cos(p * 2)) * 0.020;
+  character.scale.set(1 + squash, 1 - squash * 1.38, 1 + squash * 0.38);
+  blobShadow.scale.set(1 - hop * 0.09, 1 - hop * 0.09, 1);
+  blobShadow.material.opacity = 0.13 - hop * 0.025;
 }
 
 function animateStumble(local) {
-  const d = 2.15;
+  const d = 2.75;
   const q = Math.min(local / d, 1);
-  const ease = 1 - Math.pow(1 - q, 3);
-  const panic = Math.sin(local * 24) * Math.max(0, 1 - q);
 
-  if (q < 0.32) {
-    const k = q / 0.32;
-    character.rotation.z = -k * 0.42 + panic * 0.06;
-    character.rotation.x = k * 0.10;
-    character.position.x = -k * 0.12;
-    armL.rotation.z = -0.85 - panic * 0.2;
-    armR.rotation.z = 0.75 + panic * 0.2;
-    legL.rotation.x = panic * 0.45;
-    legR.rotation.x = -panic * 0.45;
-  } else if (q < 0.72) {
-    const k = (q - 0.32) / 0.40;
-    character.rotation.z = -0.42 - k * 1.15;
-    character.rotation.x = k * 0.42;
-    character.position.y = 0.12 - Math.sin(k * Math.PI) * 0.12;
-    character.position.x = -0.12 - k * 0.28;
-    armL.rotation.z = -1.1;
-    armR.rotation.z = 1.0;
+  if (q < 0.22) {
+    const k = q / 0.22;
+    const panic = Math.sin(local * 30);
+    facePanic();
+    character.rotation.z = -k * 0.20 + panic * 0.045;
+    character.rotation.x = k * 0.08;
+    character.position.x = -k * 0.10;
+    character.position.y = 0.12 + Math.abs(panic) * 0.018;
+    bodyRig.rotation.z = panic * 0.045;
+    armL.rotation.z = -0.68 - panic * 0.22;
+    armR.rotation.z = 0.68 + panic * 0.22;
+    armL.rotation.x = panic * 0.22;
+    armR.rotation.x = -panic * 0.22;
+    legL.rotation.x = panic * 0.48;
+    legR.rotation.x = -panic * 0.48;
+  } else if (q < 0.52) {
+    const raw = (q - 0.22) / 0.30;
+    const k = 1 - Math.pow(1 - raw, 3);
+    if (raw < 0.72) facePanic();
+    else faceImpact();
+    character.rotation.z = -0.20 - k * 1.18;
+    character.rotation.x = 0.08 + k * 0.24;
+    character.position.x = -0.10 - k * 0.36;
+    character.position.y = 0.12 - k * 0.025;
+    armL.rotation.z = -0.92 - k * 0.20;
+    armR.rotation.z = 0.92 + k * 0.16;
+    armL.rotation.x = -0.18 * k;
+    armR.rotation.x = 0.22 * k;
+    legL.rotation.x = 0.35 - k * 0.12;
+    legR.rotation.x = -0.42 + k * 0.18;
+    const hit = Math.max(0, (raw - 0.72) / 0.28);
+    character.scale.set(1 + hit * 0.035, 1 - hit * 0.055, 1 + hit * 0.015);
+    blobShadow.scale.set(1 + k * 0.20, 1 - k * 0.12, 1);
+    blobShadow.material.opacity = 0.12 + k * 0.035;
+  } else if (q < 0.78) {
+    const k = (q - 0.52) / 0.26;
+    const wobble = Math.sin(local * 18) * (1 - k) * 0.035;
+    faceDazed(local);
+    character.rotation.z = -1.38 + wobble;
+    character.rotation.x = 0.32 - k * 0.05;
+    character.position.x = -0.46;
+    character.position.y = 0.095 + Math.abs(wobble) * 0.02;
+    armL.rotation.z = -1.08 + wobble;
+    armR.rotation.z = 1.02 - wobble;
+    legL.rotation.x = 0.15;
+    legR.rotation.x = -0.18;
+    blobShadow.scale.set(1.18, 0.86, 1);
+    blobShadow.material.opacity = 0.15;
   } else {
-    const k = (q - 0.72) / 0.28;
-    character.rotation.z = -1.57 * (1 - k);
-    character.rotation.x = 0.42 * (1 - k);
-    character.position.x = -0.40 * (1 - k);
-    character.position.y = 0.12;
-    armL.rotation.z = -1.1 * (1 - k) - 0.10 * k;
-    armR.rotation.z = 1.0 * (1 - k) + 0.10 * k;
+    const raw = (q - 0.78) / 0.22;
+    const k = raw * raw * (3 - 2 * raw);
+    const wobble = Math.sin(local * 20) * (1 - k) * 0.025;
+    faceRecover(k);
+    character.rotation.z = -1.38 * (1 - k) + wobble;
+    character.rotation.x = 0.27 * (1 - k);
+    character.position.x = -0.46 * (1 - k);
+    character.position.y = 0.095 + 0.025 * k;
+    armL.rotation.z = -1.08 * (1 - k) - 0.10 * k;
+    armR.rotation.z = 1.02 * (1 - k) + 0.10 * k;
+    legL.rotation.x = 0.15 * (1 - k);
+    legR.rotation.x = -0.18 * (1 - k);
+    blobShadow.scale.set(1.18 - k * 0.18, 0.86 + k * 0.14, 1);
+    blobShadow.material.opacity = 0.15 - k * 0.03;
   }
 
   if (local >= d) setState('idle');
-  void ease;
 }
 
 function animateVictory(t) {
-  const p = t * 5.2;
+  faceVictory();
+  const p = t * 5.4;
   const bounce = Math.abs(Math.sin(p));
-  character.position.y = 0.12 + bounce * 0.12;
-  character.rotation.z = Math.sin(p * 0.5) * 0.035;
+  character.position.y = 0.12 + bounce * 0.13;
+  character.rotation.z = Math.sin(p * 0.5) * 0.045;
+  character.rotation.y = Math.sin(p * 0.5) * 0.05;
   armL.rotation.z = -1.92 + Math.sin(p) * 0.10;
   armR.rotation.z = 1.92 - Math.sin(p) * 0.10;
-  legL.rotation.x = Math.sin(p) * 0.10;
-  legR.rotation.x = -Math.sin(p) * 0.10;
-  const s = 1 + bounce * 0.018;
+  armL.rotation.x = -0.12 + Math.sin(p) * 0.08;
+  armR.rotation.x = 0.12 - Math.sin(p) * 0.08;
+  legL.rotation.x = Math.sin(p) * 0.11;
+  legR.rotation.x = -Math.sin(p) * 0.11;
+  const s = 1 + bounce * 0.020;
   character.scale.set(s, 1 - bounce * 0.008, s);
 }
 
 function animateBlink(t) {
-  // Semi-random-looking deterministic blink rhythm.
+  if (!eyeL.visible || !eyeR.visible) return;
   const cycle = t % 4.6;
-  let scaleY = 1;
+  let blink = 1;
   if (cycle > 3.82 && cycle < 4.04) {
     const k = (cycle - 3.82) / 0.22;
-    scaleY = 0.12 + Math.abs(k - 0.5) * 1.76;
+    blink = 0.12 + Math.abs(k - 0.5) * 1.76;
   }
-  eyeL.scale.y = scaleY;
-  eyeR.scale.y = scaleY;
+  eyeL.scale.y *= blink;
+  eyeR.scale.y *= blink;
 }
 
 const clock = new THREE.Clock();
@@ -372,13 +585,14 @@ function frame() {
   const now = performance.now() / 1000;
   const local = now - stateStarted;
   resetPose();
-  animateBlink(t);
+  resetFace();
 
   if (state === 'run') animateRun(t);
   else if (state === 'stumble') animateStumble(local);
   else if (state === 'victory') animateVictory(t);
   else animateIdle(t);
 
+  animateBlink(t);
   controls.update();
   renderer.render(scene, camera);
   requestAnimationFrame(frame);
