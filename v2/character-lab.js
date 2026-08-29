@@ -235,7 +235,8 @@ const footGeo = new THREE.SphereGeometry(0.12, 22, 16);
 
 function createArm(side) {
   const shoulder = new THREE.Group();
-  shoulder.position.set(side * 0.73, 1.30, 0.03);
+  // Keep the arms readable from the front instead of letting the cube hide them.
+  shoulder.position.set(side * 0.82, 1.29, 0.10);
   const upper = mesh(armGeo, mats.black);
   upper.position.y = -0.13;
   shoulder.add(upper);
@@ -276,7 +277,7 @@ const legR = createLeg(1);
 const elbowL = armL.userData.elbow;
 const elbowR = armR.userData.elbow;
 
-const baseRig = { armLX: -0.73, armRX: 0.73, armY: 1.30, legLX: -0.275, legRX: 0.275, legY: 0.52 };
+const baseRig = { armLX: -0.82, armRX: 0.82, armY: 1.29, armZ: 0.10, legLX: -0.275, legRX: 0.275, legY: 0.52 };
 
 const blobShadow = new THREE.Mesh(
   new THREE.CircleGeometry(0.62, 48),
@@ -422,12 +423,12 @@ function resetPose() {
   bodyRig.rotation.set(0, 0, 0);
   bodyRig.position.set(0, 0, 0);
 
-  armL.position.set(baseRig.armLX, baseRig.armY, 0.03);
-  armR.position.set(baseRig.armRX, baseRig.armY, 0.03);
-  armL.rotation.set(0, 0, -0.12);
-  armR.rotation.set(0, 0, 0.12);
-  elbowL.rotation.set(-0.82, 0, 0.24);
-  elbowR.rotation.set(-0.82, 0, -0.24);
+  armL.position.set(baseRig.armLX, baseRig.armY, baseRig.armZ);
+  armR.position.set(baseRig.armRX, baseRig.armY, baseRig.armZ);
+  armL.rotation.set(0.03, -0.12, -0.24);
+  armR.rotation.set(-0.03, 0.12, 0.24);
+  elbowL.rotation.set(-0.88, 0, 0.28);
+  elbowR.rotation.set(-0.88, 0, -0.28);
 
   legL.position.set(baseRig.legLX, baseRig.legY, 0.015);
   legR.position.set(baseRig.legRX, baseRig.legY, 0.015);
@@ -444,10 +445,12 @@ function animateIdle(t) {
   bodyRig.position.y = breath * 0.012;
   bodyRig.rotation.z = Math.sin(t * 1.15) * 0.012;
   character.scale.set(1 - breath * 0.004, 1 + breath * 0.007, 1 - breath * 0.004);
-  armL.rotation.z = -0.12 + Math.sin(t * 1.7) * 0.018;
-  armR.rotation.z = 0.12 - Math.sin(t * 1.7) * 0.018;
-  elbowL.rotation.x = -0.82 + Math.sin(t * 1.5) * 0.018;
-  elbowR.rotation.x = -0.82 - Math.sin(t * 1.5) * 0.018;
+  armL.rotation.z = -0.24 + Math.sin(t * 1.7) * 0.022;
+  armR.rotation.z = 0.24 - Math.sin(t * 1.7) * 0.022;
+  armL.rotation.y = -0.12 + Math.sin(t * 1.25) * 0.014;
+  armR.rotation.y = 0.12 - Math.sin(t * 1.25) * 0.014;
+  elbowL.rotation.x = -0.88 + Math.sin(t * 1.5) * 0.020;
+  elbowR.rotation.x = -0.88 - Math.sin(t * 1.5) * 0.020;
 }
 
 function animateRun(t) {
@@ -474,22 +477,25 @@ function animateRun(t) {
   legL.rotation.z = -0.010 - leftLift * 0.010;
   legR.rotation.z = 0.010 + rightLift * 0.010;
 
-  const armPump = step * (0.22 + 0.08 * tune.stepLength) * tune.arms;
-  const elbowPump = step * 0.12 * tune.arms;
-  armL.rotation.x = armPump;
-  armR.rotation.x = -armPump;
-  armL.rotation.y = -0.07 + step * 0.055 * tune.arms;
-  armR.rotation.y = 0.07 - step * 0.055 * tune.arms;
-  armL.rotation.z = -0.14 - waddle * 0.018 * tune.waddle - step * 0.018 * tune.arms;
-  armR.rotation.z = 0.14 - waddle * 0.018 * tune.waddle - step * 0.018 * tune.arms;
-  armL.position.y = baseRig.armY - step * 0.012 * tune.arms;
-  armR.position.y = baseRig.armY + step * 0.012 * tune.arms;
-  armL.position.z = 0.03 - step * 0.040 * tune.arms * tune.stepLength;
-  armR.position.z = 0.03 + step * 0.040 * tune.arms * tune.stepLength;
-  elbowL.rotation.x = -0.92 - elbowPump;
-  elbowR.rotation.x = -0.92 + elbowPump;
-  elbowL.rotation.z = 0.25 + step * 0.045 * tune.arms;
-  elbowR.rotation.z = -0.25 + step * 0.045 * tune.arms;
+  // Arms stay visibly outside the cube, then swing in the opposite rhythm of the legs.
+  const armPump = step * (0.24 + 0.09 * tune.stepLength) * tune.arms;
+  const elbowPump = step * 0.14 * tune.arms;
+  armL.rotation.x = 0.03 + armPump;
+  armR.rotation.x = -0.03 - armPump;
+  armL.rotation.y = -0.16 + step * 0.085 * tune.arms;
+  armR.rotation.y = 0.16 - step * 0.085 * tune.arms;
+  armL.rotation.z = -0.27 - waddle * 0.025 * tune.waddle - step * 0.030 * tune.arms;
+  armR.rotation.z = 0.27 - waddle * 0.025 * tune.waddle - step * 0.030 * tune.arms;
+  armL.position.x = baseRig.armLX - Math.max(0, step) * 0.018 * tune.arms;
+  armR.position.x = baseRig.armRX + Math.max(0, -step) * 0.018 * tune.arms;
+  armL.position.y = baseRig.armY - step * 0.014 * tune.arms;
+  armR.position.y = baseRig.armY + step * 0.014 * tune.arms;
+  armL.position.z = baseRig.armZ - step * 0.052 * tune.arms * tune.stepLength;
+  armR.position.z = baseRig.armZ + step * 0.052 * tune.arms * tune.stepLength;
+  elbowL.rotation.x = -0.94 - elbowPump;
+  elbowR.rotation.x = -0.94 + elbowPump;
+  elbowL.rotation.z = 0.31 + step * 0.055 * tune.arms;
+  elbowR.rotation.z = -0.31 + step * 0.055 * tune.arms;
 
   // Less vertical bounce, more forward intent and alternating weight transfer.
   character.position.x = waddle * 0.026 * tune.waddle;
