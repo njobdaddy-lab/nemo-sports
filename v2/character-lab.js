@@ -121,8 +121,6 @@ const character = new THREE.Group();
 character.position.y = 0.12;
 scene.add(character);
 
-// Torso rig: body, face and arms react to the support leg.
-// Legs live on the character root so the stance foot can stay planted on the floor.
 const bodyRig = new THREE.Group();
 character.add(bodyRig);
 
@@ -230,6 +228,16 @@ for (const [x, y, s] of [[-0.42, 0.03, 0.07], [0.02, 0.16, 0.055], [0.42, -0.01,
 }
 dizzyFX.visible = false;
 
+const victoryFX = new THREE.Group();
+victoryFX.position.set(0, 1.44, -0.02);
+bodyRig.add(victoryFX);
+for (const [x, y, s] of [[-0.72, 0.28, 0.065], [-0.54, 0.58, 0.048], [0.58, 0.56, 0.052], [0.74, 0.24, 0.067], [0, 0.76, 0.055]]) {
+  const star = mesh(new THREE.OctahedronGeometry(s, 0), mats.star, false);
+  star.position.set(x, y, 0.03);
+  victoryFX.add(star);
+}
+victoryFX.visible = false;
+
 const legGeo = new THREE.CapsuleGeometry(0.045, 0.28, 5, 10);
 const armGeo = new THREE.CapsuleGeometry(0.043, 0.15, 5, 10);
 const handGeo = new THREE.SphereGeometry(0.095, 22, 16);
@@ -332,7 +340,9 @@ function resetFace() {
   shockMouth.visible = false;
   grimaceMouth.visible = false;
   victoryMouth.visible = false;
+  victoryMouth.scale.set(1, 1, 1);
   dizzyFX.visible = false;
+  victoryFX.visible = false;
   cheeks.forEach(c => { c.scale.set(1.25, 0.60, 0.25); c.material.opacity = 0.82; });
 }
 
@@ -406,15 +416,24 @@ function faceRecover(k) {
   else showOnlyMouth('smile');
 }
 
-function faceVictory() {
-  eyeL.scale.set(1.06, 0.84, 1);
-  eyeR.scale.set(1.06, 0.84, 1);
-  browL.position.y = 0.36;
-  browR.position.y = 0.36;
-  browL.rotation.z = 0.08;
-  browR.rotation.z = -0.08;
+function faceVictory(local) {
+  eyeL.scale.set(1.08, 0.62, 1);
+  eyeR.scale.set(1.08, 0.62, 1);
+  browL.position.y = 0.375;
+  browR.position.y = 0.375;
+  browL.rotation.z = 0.13;
+  browR.rotation.z = -0.13;
+  victoryMouth.scale.set(1.22, 1.04, 1);
   showOnlyMouth('victory');
-  cheeks.forEach(c => { c.scale.set(1.42, 0.68, 0.25); c.material.opacity = 0.98; });
+  cheeks.forEach(c => { c.scale.set(1.48, 0.70, 0.25); c.material.opacity = 1; });
+  victoryFX.visible = true;
+  victoryFX.rotation.y = Math.sin(local * 2.8) * 0.12;
+  victoryFX.children.forEach((star, i) => {
+    const pulse = 0.82 + Math.abs(Math.sin(local * 5.2 + i * 0.9)) * 0.42;
+    star.scale.setScalar(pulse);
+    star.rotation.x = local * (1.5 + i * 0.12);
+    star.rotation.z = -local * (1.2 + i * 0.10);
+  });
 }
 
 function resetPose() {
@@ -437,6 +456,7 @@ function resetPose() {
   legL.rotation.set(0, 0, 0);
   legR.rotation.set(0, 0, 0);
 
+  blobShadow.position.x = 0;
   blobShadow.scale.set(1, 1, 1);
   blobShadow.material.opacity = 0.12;
   shockMouth.scale.set(1, 1, 1);
@@ -464,7 +484,6 @@ function animateRun(t) {
   const contactDeadZone = 0.16;
   const liftRange = 1 - contactDeadZone;
 
-  // Only the swing foot lifts. Around each foot-change there is a short two-feet-on-floor moment.
   const leftLift = Math.pow(Math.max(0, (gait - contactDeadZone) / liftRange), 1.35);
   const rightLift = Math.pow(Math.max(0, (-gait - contactDeadZone) / liftRange), 1.35);
   const singleSupport = Math.max(leftLift, rightLift);
@@ -475,8 +494,6 @@ function animateRun(t) {
   const strideDepth = 0.135 * tune.stepLength;
   const swingTilt = 0.12 * tune.stepLength;
 
-  // Stance foot stays at baseRig.legY: planted on the floor.
-  // The other foot rises and travels through the stride arc.
   legL.position.y = baseRig.legY + leftLift * lift;
   legR.position.y = baseRig.legY + rightLift * lift;
   legL.position.z = 0.015 + travel * strideDepth;
@@ -486,7 +503,6 @@ function animateRun(t) {
   legL.rotation.z = -0.006 - leftLift * 0.008;
   legR.rotation.z = 0.006 + rightLift * 0.008;
 
-  // Arms swing opposite the feet, while inheriting the torso's support-leg lean.
   const armSwing = travel * (0.18 + 0.07 * tune.stepLength) * tune.arms;
   const elbowSwing = travel * 0.09 * tune.arms;
   armL.rotation.x = 0.02 - armSwing;
@@ -504,8 +520,6 @@ function animateRun(t) {
   elbowL.rotation.z = 0.18 + gait * 0.020 * tune.arms;
   elbowR.rotation.z = -0.18 + gait * 0.020 * tune.arms;
 
-  // The torso moves because one leg is supporting the cube.
-  // No independent waddle oscillator: same gait phase, same support event.
   bodyRig.position.x = supportShift * 0.042;
   bodyRig.position.y = -singleSupport * 0.010 * tune.waddle;
   bodyRig.position.z = 0.008 + Math.abs(travel) * 0.004 * tune.stepLength;
@@ -513,108 +527,146 @@ function animateRun(t) {
   bodyRig.rotation.y = -travel * 0.010 * tune.stepLength;
   bodyRig.rotation.z = -supportShift * 0.052;
 
-  // Squash happens at foot exchange, but only the torso squashes so the planted foot stays planted.
   const squash = landing * 0.008;
   bodyRig.scale.set(1 + squash * 0.45, 1 - squash, 1 + squash * 0.24);
   blobShadow.scale.set(1 + squash * 1.4, 1 + squash * 1.4, 1);
   blobShadow.material.opacity = 0.12 + landing * 0.009;
 }
 
+function groundedCharacterY(angle) {
+  const half = 0.71;
+  const c = Math.abs(Math.cos(angle));
+  const s = Math.abs(Math.sin(angle));
+  const projectedCenterY = 1.17 * Math.cos(angle);
+  const projectedHalfHeight = half * (c + s);
+  return Math.max(0.12, 0.15 + projectedHalfHeight - projectedCenterY);
+}
+
 function animateStumble(local) {
-  const d = 2.75;
+  const d = 2.85;
   const q = Math.min(local / d, 1);
 
-  if (q < 0.22) {
-    const k = q / 0.22;
-    const panic = Math.sin(local * 30);
+  if (q < 0.20) {
+    const k = q / 0.20;
+    const panic = Math.sin(local * 31);
     facePanic();
-    character.rotation.z = -k * 0.20 + panic * 0.045;
-    character.rotation.x = k * 0.08;
-    character.position.x = -k * 0.10;
-    character.position.y = 0.12 + Math.abs(panic) * 0.018;
-    bodyRig.rotation.z = panic * 0.045;
-    armL.rotation.z = -0.68 - panic * 0.22;
-    armR.rotation.z = 0.68 + panic * 0.22;
-    armL.rotation.x = panic * 0.22;
-    armR.rotation.x = -panic * 0.22;
-    elbowL.rotation.x = -0.28 + panic * 0.10;
-    elbowR.rotation.x = -0.28 - panic * 0.10;
-    legL.rotation.x = panic * 0.48;
-    legR.rotation.x = -panic * 0.48;
-  } else if (q < 0.52) {
-    const raw = (q - 0.22) / 0.30;
+    const angle = -k * 0.18 + panic * 0.035;
+    character.rotation.z = angle;
+    character.rotation.x = k * 0.06;
+    character.position.x = -k * 0.09;
+    character.position.y = groundedCharacterY(angle) + Math.abs(panic) * 0.012;
+    bodyRig.rotation.z = panic * 0.030;
+    armL.rotation.z = -0.58 - panic * 0.20;
+    armR.rotation.z = 0.58 + panic * 0.20;
+    armL.rotation.x = panic * 0.20;
+    armR.rotation.x = -panic * 0.20;
+    elbowL.rotation.x = -0.32 + panic * 0.10;
+    elbowR.rotation.x = -0.32 - panic * 0.10;
+    legL.rotation.x = panic * 0.42;
+    legR.rotation.x = -panic * 0.42;
+    blobShadow.position.x = character.position.x;
+  } else if (q < 0.50) {
+    const raw = (q - 0.20) / 0.30;
     const k = 1 - Math.pow(1 - raw, 3);
-    if (raw < 0.72) facePanic();
+    const angle = -0.18 - k * 1.30;
+    if (raw < 0.70) facePanic();
     else faceImpact();
-    character.rotation.z = -0.20 - k * 1.18;
-    character.rotation.x = 0.08 + k * 0.24;
-    character.position.x = -0.10 - k * 0.36;
-    character.position.y = 0.12 - k * 0.025;
-    armL.rotation.z = -0.92 - k * 0.20;
-    armR.rotation.z = 0.92 + k * 0.16;
-    armL.rotation.x = -0.18 * k;
-    armR.rotation.x = 0.22 * k;
-    elbowL.rotation.x = -0.26;
-    elbowR.rotation.x = -0.30;
-    const hit = Math.max(0, (raw - 0.72) / 0.28);
-    character.scale.set(1 + hit * 0.035, 1 - hit * 0.055, 1 + hit * 0.015);
-    blobShadow.scale.set(1 + k * 0.20, 1 - k * 0.12, 1);
-    blobShadow.material.opacity = 0.12 + k * 0.035;
-  } else if (q < 0.78) {
-    const k = (q - 0.52) / 0.26;
-    const wobble = Math.sin(local * 18) * (1 - k) * 0.035;
+    character.rotation.z = angle;
+    character.rotation.x = 0.06 + k * 0.18;
+    character.position.x = -0.09 - k * 0.37;
+    const impact = Math.max(0, (raw - 0.72) / 0.28);
+    character.position.y = groundedCharacterY(angle) + Math.sin(impact * Math.PI) * 0.018;
+    armL.rotation.z = -0.82 - k * 0.30;
+    armR.rotation.z = 0.82 + k * 0.24;
+    armL.rotation.x = -0.16 * k;
+    armR.rotation.x = 0.20 * k;
+    elbowL.rotation.x = -0.30;
+    elbowR.rotation.x = -0.34;
+    legL.rotation.x = 0.28 - k * 0.10;
+    legR.rotation.x = -0.34 + k * 0.12;
+    bodyRig.scale.set(1 + impact * 0.030, 1 - impact * 0.045, 1 + impact * 0.015);
+    blobShadow.position.x = character.position.x;
+    blobShadow.scale.set(1 + k * 0.28, 1 - k * 0.10, 1);
+    blobShadow.material.opacity = 0.12 + k * 0.045;
+  } else if (q < 0.76) {
+    const k = (q - 0.50) / 0.26;
+    const wobble = Math.sin(local * 18) * (1 - k) * 0.022;
+    const angle = -1.48 + wobble;
     faceDazed(local);
-    character.rotation.z = -1.38 + wobble;
-    character.rotation.x = 0.32 - k * 0.05;
+    character.rotation.z = angle;
+    character.rotation.x = 0.24 - k * 0.04;
     character.position.x = -0.46;
-    character.position.y = 0.095 + Math.abs(wobble) * 0.02;
-    armL.rotation.z = -1.08 + wobble;
-    armR.rotation.z = 1.02 - wobble;
-    elbowL.rotation.x = -0.55;
-    elbowR.rotation.x = -0.48;
-    legL.rotation.x = 0.15;
-    legR.rotation.x = -0.18;
-    blobShadow.scale.set(1.18, 0.86, 1);
-    blobShadow.material.opacity = 0.15;
+    character.position.y = groundedCharacterY(angle) + Math.abs(wobble) * 0.008;
+    armL.rotation.z = -1.05 + wobble;
+    armR.rotation.z = 1.00 - wobble;
+    elbowL.rotation.x = -0.50;
+    elbowR.rotation.x = -0.45;
+    legL.rotation.x = 0.12;
+    legR.rotation.x = -0.14;
+    blobShadow.position.x = character.position.x;
+    blobShadow.scale.set(1.24, 0.82, 1);
+    blobShadow.material.opacity = 0.16;
   } else {
-    const raw = (q - 0.78) / 0.22;
+    const raw = (q - 0.76) / 0.24;
     const k = raw * raw * (3 - 2 * raw);
-    const wobble = Math.sin(local * 20) * (1 - k) * 0.025;
+    const wobble = Math.sin(local * 19) * (1 - k) * 0.018;
+    const angle = -1.48 * (1 - k) + wobble;
     faceRecover(k);
-    character.rotation.z = -1.38 * (1 - k) + wobble;
-    character.rotation.x = 0.27 * (1 - k);
+    character.rotation.z = angle;
+    character.rotation.x = 0.20 * (1 - k);
     character.position.x = -0.46 * (1 - k);
-    character.position.y = 0.095 + 0.025 * k;
-    armL.rotation.z = -1.08 * (1 - k) - 0.18 * k;
-    armR.rotation.z = 1.02 * (1 - k) + 0.18 * k;
-    elbowL.rotation.x = -0.55 * (1 - k) - 0.90 * k;
-    elbowR.rotation.x = -0.48 * (1 - k) - 0.90 * k;
-    legL.rotation.x = 0.15 * (1 - k);
-    legR.rotation.x = -0.18 * (1 - k);
-    blobShadow.scale.set(1.18 - k * 0.18, 0.86 + k * 0.14, 1);
-    blobShadow.material.opacity = 0.15 - k * 0.03;
+    character.position.y = groundedCharacterY(angle);
+    armL.rotation.z = -1.05 * (1 - k) - 0.17 * k;
+    armR.rotation.z = 1.00 * (1 - k) + 0.17 * k;
+    elbowL.rotation.x = -0.50 * (1 - k) - 0.90 * k;
+    elbowR.rotation.x = -0.45 * (1 - k) - 0.90 * k;
+    legL.rotation.x = 0.12 * (1 - k);
+    legR.rotation.x = -0.14 * (1 - k);
+    blobShadow.position.x = character.position.x;
+    blobShadow.scale.set(1.24 - k * 0.24, 0.82 + k * 0.18, 1);
+    blobShadow.material.opacity = 0.16 - k * 0.04;
   }
 
   if (local >= d) setState('idle');
 }
 
-function animateVictory(t) {
-  faceVictory();
-  const p = t * 5.4;
-  const bounce = Math.abs(Math.sin(p));
-  character.position.y = 0.12 + bounce * 0.13;
-  character.rotation.z = Math.sin(p * 0.5) * 0.045;
-  character.rotation.y = Math.sin(p * 0.5) * 0.05;
-  armL.rotation.z = -1.92 + Math.sin(p) * 0.10;
-  armR.rotation.z = 1.92 - Math.sin(p) * 0.10;
-  armL.rotation.x = -0.12 + Math.sin(p) * 0.08;
-  armR.rotation.x = 0.12 - Math.sin(p) * 0.08;
-  elbowL.rotation.x = -0.58 + Math.sin(p) * 0.05;
-  elbowR.rotation.x = -0.58 - Math.sin(p) * 0.05;
-  legL.rotation.x = Math.sin(p) * 0.11;
-  legR.rotation.x = -Math.sin(p) * 0.11;
-  const s = 1 + bounce * 0.020;
-  character.scale.set(s, 1 - bounce * 0.008, s);
+function animateVictory(local) {
+  faceVictory(local);
+
+  const cycle = (local % 1.18) / 1.18;
+  const jump = Math.pow(Math.max(0, Math.sin(Math.PI * cycle)), 1.12);
+  const anticipation = cycle < 0.14 ? Math.sin((cycle / 0.14) * Math.PI) : 0;
+  const fistPulse = Math.sin(local * 9.0);
+
+  character.position.y = 0.12 + jump * 0.24;
+  character.rotation.z = Math.sin(local * 5.0) * 0.022 * (0.45 + jump * 0.55);
+  character.rotation.y = Math.sin(local * 2.8) * 0.085;
+
+  bodyRig.position.y = -anticipation * 0.018;
+  bodyRig.scale.set(1 + anticipation * 0.016, 1 - anticipation * 0.026, 1 + anticipation * 0.010);
+
+  // Clear V-shaped winner pose: fists above the cube, not straight out to the sides.
+  armL.rotation.z = -2.46 + fistPulse * 0.045;
+  armR.rotation.z = 2.46 - fistPulse * 0.045;
+  armL.rotation.x = -0.08 + fistPulse * 0.035;
+  armR.rotation.x = 0.08 - fistPulse * 0.035;
+  armL.rotation.y = -0.04;
+  armR.rotation.y = 0.04;
+  elbowL.rotation.x = -0.24 + fistPulse * 0.035;
+  elbowR.rotation.x = -0.24 - fistPulse * 0.035;
+  elbowL.rotation.z = 0.10;
+  elbowR.rotation.z = -0.10;
+
+  // Feet leave the floor together on the cheer jump, then land together.
+  legL.rotation.x = jump * 0.18;
+  legR.rotation.x = -jump * 0.18;
+  legL.rotation.z = -jump * 0.07;
+  legR.rotation.z = jump * 0.07;
+  legL.position.y = baseRig.legY + jump * 0.025;
+  legR.position.y = baseRig.legY + jump * 0.025;
+
+  blobShadow.scale.set(1 - jump * 0.20, 1 - jump * 0.20, 1);
+  blobShadow.material.opacity = 0.13 - jump * 0.055;
 }
 
 function animateBlink(t) {
@@ -639,7 +691,7 @@ function frame() {
 
   if (state === 'run') animateRun(t);
   else if (state === 'stumble') animateStumble(local);
-  else if (state === 'victory') animateVictory(t);
+  else if (state === 'victory') animateVictory(local);
   else animateIdle(t);
 
   animateBlink(t);
