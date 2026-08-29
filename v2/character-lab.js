@@ -433,7 +433,6 @@ function faceRecover(k) {
 }
 
 function faceVictory(local) {
-  // Squeezed crescent eyes + huge open smile: unmistakably "I won!" instead of sleepy/smug.
   eyeL.visible = false;
   eyeR.visible = false;
   happyEyeL.visible = true;
@@ -555,97 +554,152 @@ function animateRun(t) {
   blobShadow.material.opacity = 0.12 + landing * 0.009;
 }
 
-function groundedCharacterY(angle) {
+function groundedBackFallY(xAngle, zAngle) {
   const half = 0.71;
-  const c = Math.abs(Math.cos(angle));
-  const s = Math.abs(Math.sin(angle));
-  const projectedCenterY = 1.17 * Math.cos(angle);
-  const projectedHalfHeight = half * (c + s);
-  return Math.max(0.12, 0.15 + projectedHalfHeight - projectedCenterY);
+  const cx = Math.cos(xAngle);
+  const sx = Math.sin(xAngle);
+  const cz = Math.cos(zAngle);
+  const sz = Math.sin(zAngle);
+  const projectedCenterY = 1.17 * cx * cz;
+  const projectedHalfHeight = half * (Math.abs(sz) + Math.abs(cz * cx) + Math.abs(cz * sx));
+  return Math.max(0.12, 0.17 + projectedHalfHeight - projectedCenterY);
 }
 
 function animateStumble(local) {
-  const d = 2.85;
+  const d = 3.15;
   const q = Math.min(local / d, 1);
 
-  if (q < 0.20) {
-    const k = q / 0.20;
-    const panic = Math.sin(local * 31);
+  if (q < 0.22) {
+    const k = q / 0.22;
+    const panic = Math.sin(local * 30);
     facePanic();
-    const angle = -k * 0.18 + panic * 0.035;
-    character.rotation.z = angle;
-    character.rotation.x = k * 0.06;
-    character.position.x = -k * 0.09;
-    character.position.y = groundedCharacterY(angle) + Math.abs(panic) * 0.012;
-    bodyRig.rotation.z = panic * 0.030;
-    armL.rotation.z = -0.58 - panic * 0.20;
-    armR.rotation.z = 0.58 + panic * 0.20;
-    armL.rotation.x = panic * 0.20;
-    armR.rotation.x = -panic * 0.20;
-    elbowL.rotation.x = -0.32 + panic * 0.10;
-    elbowR.rotation.x = -0.32 - panic * 0.10;
-    legL.rotation.x = panic * 0.42;
-    legR.rotation.x = -panic * 0.42;
-    blobShadow.position.x = character.position.x;
-  } else if (q < 0.50) {
-    const raw = (q - 0.20) / 0.30;
+
+    const xAngle = -0.30 * k;
+    const zAngle = panic * 0.025;
+    character.rotation.x = xAngle;
+    character.rotation.z = zAngle;
+    character.position.x = panic * 0.015;
+    character.position.y = groundedBackFallY(xAngle, zAngle) + Math.abs(panic) * 0.010;
+
+    armL.rotation.z = -0.60 - panic * 0.18;
+    armR.rotation.z = 0.60 + panic * 0.18;
+    armL.rotation.x = -0.10 - panic * 0.20;
+    armR.rotation.x = 0.10 + panic * 0.20;
+    elbowL.rotation.x = -0.38 + panic * 0.10;
+    elbowR.rotation.x = -0.38 - panic * 0.10;
+
+    legL.position.z = 0.015 + k * 0.12;
+    legR.position.z = 0.015 - k * 0.04;
+    legL.rotation.x = -0.34 * k;
+    legR.rotation.x = 0.12 * k;
+  } else if (q < 0.56) {
+    const raw = (q - 0.22) / 0.34;
     const k = 1 - Math.pow(1 - raw, 3);
-    const angle = -0.18 - k * 1.30;
-    if (raw < 0.70) facePanic();
-    else faceImpact();
-    character.rotation.z = angle;
-    character.rotation.x = 0.06 + k * 0.18;
-    character.position.x = -0.09 - k * 0.37;
+    const xAngle = -0.30 - k * 1.00;
+    const zAngle = k * 0.20;
     const impact = Math.max(0, (raw - 0.72) / 0.28);
-    character.position.y = groundedCharacterY(angle) + Math.sin(impact * Math.PI) * 0.018;
-    armL.rotation.z = -0.82 - k * 0.30;
-    armR.rotation.z = 0.82 + k * 0.24;
-    armL.rotation.x = -0.16 * k;
-    armR.rotation.x = 0.20 * k;
-    elbowL.rotation.x = -0.30;
-    elbowR.rotation.x = -0.34;
-    legL.rotation.x = 0.28 - k * 0.10;
-    legR.rotation.x = -0.34 + k * 0.12;
-    bodyRig.scale.set(1 + impact * 0.030, 1 - impact * 0.045, 1 + impact * 0.015);
-    blobShadow.position.x = character.position.x;
-    blobShadow.scale.set(1 + k * 0.28, 1 - k * 0.10, 1);
+
+    if (raw < 0.72) facePanic();
+    else faceImpact();
+
+    character.rotation.x = xAngle;
+    character.rotation.z = zAngle;
+    character.position.x = k * 0.06;
+    character.position.y = groundedBackFallY(xAngle, zAngle) + Math.sin(impact * Math.PI) * 0.018;
+
+    // Push the arms outward and slightly toward the face plane so neither hand gets trapped under the cube.
+    armL.position.x = baseRig.armLX - k * 0.08;
+    armR.position.x = baseRig.armRX + k * 0.08;
+    armL.position.z = baseRig.armZ + k * 0.10;
+    armR.position.z = baseRig.armZ + k * 0.10;
+    armL.rotation.z = -0.72 - k * 0.38;
+    armR.rotation.z = 0.72 + k * 0.34;
+    armL.rotation.x = 0.06 + k * 0.24;
+    armR.rotation.x = -0.06 - k * 0.24;
+    elbowL.rotation.x = -0.36 + k * 0.08;
+    elbowR.rotation.x = -0.36 + k * 0.08;
+
+    // One leg kicks up while the other trails, so the landing reads as a clumsy backward fall.
+    legL.position.y = baseRig.legY + k * 0.11;
+    legL.position.z = 0.015 + k * 0.10;
+    legR.position.y = baseRig.legY + k * 0.015;
+    legR.position.z = 0.015 - k * 0.05;
+    legL.rotation.x = -0.68 * k;
+    legL.rotation.z = -0.12 * k;
+    legR.rotation.x = 0.16 * k;
+    legR.rotation.z = 0.04 * k;
+
+    bodyRig.scale.set(1 + impact * 0.028, 1 - impact * 0.042, 1 + impact * 0.014);
+    blobShadow.scale.set(1 + k * 0.30, 1 - k * 0.08, 1);
     blobShadow.material.opacity = 0.12 + k * 0.045;
-  } else if (q < 0.76) {
-    const k = (q - 0.50) / 0.26;
-    const wobble = Math.sin(local * 18) * (1 - k) * 0.022;
-    const angle = -1.48 + wobble;
+  } else if (q < 0.80) {
+    const k = (q - 0.56) / 0.24;
+    const wobble = Math.sin(local * 17) * (1 - k) * 0.016;
+    const xAngle = -1.30 + wobble * 0.30;
+    const zAngle = 0.20 + wobble;
+
     faceDazed(local);
-    character.rotation.z = angle;
-    character.rotation.x = 0.24 - k * 0.04;
-    character.position.x = -0.46;
-    character.position.y = groundedCharacterY(angle) + Math.abs(wobble) * 0.008;
-    armL.rotation.z = -1.05 + wobble;
-    armR.rotation.z = 1.00 - wobble;
-    elbowL.rotation.x = -0.50;
-    elbowR.rotation.x = -0.45;
-    legL.rotation.x = 0.12;
-    legR.rotation.x = -0.14;
-    blobShadow.position.x = character.position.x;
-    blobShadow.scale.set(1.24, 0.82, 1);
+    character.rotation.x = xAngle;
+    character.rotation.z = zAngle;
+    character.position.x = 0.06;
+    character.position.y = groundedBackFallY(xAngle, zAngle) + Math.abs(wobble) * 0.006;
+
+    // Face-up "벌러덩": arms stay outside the silhouette instead of disappearing under the body.
+    armL.position.x = baseRig.armLX - 0.08;
+    armR.position.x = baseRig.armRX + 0.08;
+    armL.position.z = baseRig.armZ + 0.10;
+    armR.position.z = baseRig.armZ + 0.10;
+    armL.rotation.z = -1.10 + wobble;
+    armR.rotation.z = 1.06 - wobble;
+    armL.rotation.x = 0.30;
+    armR.rotation.x = -0.30;
+    elbowL.rotation.x = -0.30;
+    elbowR.rotation.x = -0.30;
+
+    legL.position.y = baseRig.legY + 0.12;
+    legL.position.z = 0.115;
+    legL.rotation.x = -0.74;
+    legL.rotation.z = -0.12;
+    legR.position.y = baseRig.legY + 0.02;
+    legR.position.z = -0.025;
+    legR.rotation.x = 0.18;
+    legR.rotation.z = 0.04;
+
+    blobShadow.scale.set(1.30, 0.90, 1);
     blobShadow.material.opacity = 0.16;
   } else {
-    const raw = (q - 0.76) / 0.24;
+    const raw = (q - 0.80) / 0.20;
     const k = raw * raw * (3 - 2 * raw);
-    const wobble = Math.sin(local * 19) * (1 - k) * 0.018;
-    const angle = -1.48 * (1 - k) + wobble;
+    const xAngle = -1.30 * (1 - k);
+    const zAngle = 0.20 * (1 - k);
+
     faceRecover(k);
-    character.rotation.z = angle;
-    character.rotation.x = 0.20 * (1 - k);
-    character.position.x = -0.46 * (1 - k);
-    character.position.y = groundedCharacterY(angle);
-    armL.rotation.z = -1.05 * (1 - k) - 0.17 * k;
-    armR.rotation.z = 1.00 * (1 - k) + 0.17 * k;
-    elbowL.rotation.x = -0.50 * (1 - k) - 0.90 * k;
-    elbowR.rotation.x = -0.45 * (1 - k) - 0.90 * k;
-    legL.rotation.x = 0.12 * (1 - k);
-    legR.rotation.x = -0.14 * (1 - k);
-    blobShadow.position.x = character.position.x;
-    blobShadow.scale.set(1.24 - k * 0.24, 0.82 + k * 0.18, 1);
+    character.rotation.x = xAngle;
+    character.rotation.z = zAngle;
+    character.position.x = 0.06 * (1 - k);
+    character.position.y = groundedBackFallY(xAngle, zAngle);
+
+    armL.position.x = baseRig.armLX - 0.08 * (1 - k);
+    armR.position.x = baseRig.armRX + 0.08 * (1 - k);
+    armL.position.z = baseRig.armZ + 0.10 * (1 - k);
+    armR.position.z = baseRig.armZ + 0.10 * (1 - k);
+    armL.rotation.z = -1.10 * (1 - k) - 0.17 * k;
+    armR.rotation.z = 1.06 * (1 - k) + 0.17 * k;
+    armL.rotation.x = 0.30 * (1 - k) + 0.02 * k;
+    armR.rotation.x = -0.30 * (1 - k) - 0.02 * k;
+    elbowL.rotation.x = -0.30 * (1 - k) - 0.90 * k;
+    elbowR.rotation.x = -0.30 * (1 - k) - 0.90 * k;
+
+    legL.position.y = baseRig.legY + 0.12 * (1 - k);
+    legL.position.z = 0.015 + 0.10 * (1 - k);
+    legL.rotation.x = -0.74 * (1 - k);
+    legL.rotation.z = -0.12 * (1 - k);
+    legR.position.y = baseRig.legY + 0.02 * (1 - k);
+    legR.position.z = 0.015 - 0.04 * (1 - k);
+    legR.rotation.x = 0.18 * (1 - k);
+    legR.rotation.z = 0.04 * (1 - k);
+
+    blobShadow.scale.set(1.30 - k * 0.30, 0.90 + k * 0.10, 1);
     blobShadow.material.opacity = 0.16 - k * 0.04;
   }
 
