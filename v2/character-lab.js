@@ -335,6 +335,7 @@ function resetFace() {
   browR.rotation.z = 0.05;
   smileMouth.visible = true;
   effortMouth.visible = false;
+  effortMouth.scale.set(0.72, 0.90, 0.30);
   shockMouth.visible = false;
   grimaceMouth.visible = false;
   victoryMouth.visible = false;
@@ -354,16 +355,18 @@ function showOnlyMouth(which) {
 }
 
 function faceRun() {
-  eyeL.scale.set(1.03, 1.04, 1);
-  eyeR.scale.set(1.03, 1.04, 1);
-  browL.rotation.z = -0.19;
-  browR.rotation.z = 0.19;
-  browL.position.y = 0.31;
-  browR.position.y = 0.31;
+  // Cute concentration, not an athlete grimace.
+  eyeL.scale.set(1.02, 1.03, 1);
+  eyeR.scale.set(1.02, 1.03, 1);
+  browL.rotation.z = -0.085;
+  browR.rotation.z = 0.085;
+  browL.position.y = 0.322;
+  browR.position.y = 0.322;
+  effortMouth.scale.set(0.60, 0.70, 0.26);
   showOnlyMouth('effort');
   cheeks.forEach(c => {
-    c.scale.set(1.34, 0.64, 0.25);
-    c.material.opacity = 0.92;
+    c.scale.set(1.31, 0.62, 0.25);
+    c.material.opacity = 0.90;
   });
 }
 
@@ -464,50 +467,52 @@ function animateIdle(t) {
 function animateRun(t) {
   faceRun();
 
-  const p = t * 16.8 * tune.speed;
+  // The feet are busy; the cube itself is not sprinting like a human.
+  const p = t * 17.2 * tune.speed;
   const step = Math.sin(p);
-  const hop = Math.abs(Math.sin(p));
+  const leftLift = Math.pow(Math.max(0, step), 1.75);
+  const rightLift = Math.pow(Math.max(0, -step), 1.75);
+  const landing = Math.pow(Math.abs(Math.cos(p)), 10);
   const waddle = Math.sin(p * 0.5);
-  const leftLift = Math.max(0, step);
-  const rightLift = Math.max(0, -step);
 
-  // Front-view readability is intentional here. Pure X-axis swings disappear
-  // when the character is viewed head-on, so feet also lift, separate sideways,
-  // and cant a little on Z. This keeps the "tiny frantic steps" readable at 0°.
-  const frontSpread = 0.052 * tune.stride;
-  const frontCant = 0.105 * tune.stride;
-  const depthSwing = 0.20 * tune.stride;
+  // Tiny alternating toe taps directly underneath the body.
+  // No side kicks: each leg only retracts a little and comes slightly forward.
+  const lift = 0.040 * tune.stride;
+  const forward = 0.045 * tune.stride;
+  const depthSwing = 0.080 * tune.stride;
 
-  legL.position.x = baseRig.legLX - step * frontSpread;
-  legR.position.x = baseRig.legRX - step * frontSpread;
-  legL.position.y = baseRig.legY + leftLift * 0.060;
-  legR.position.y = baseRig.legY + rightLift * 0.060;
+  legL.position.x = baseRig.legLX;
+  legR.position.x = baseRig.legRX;
+  legL.position.y = baseRig.legY + leftLift * lift;
+  legR.position.y = baseRig.legY + rightLift * lift;
+  legL.position.z = 0.015 + leftLift * forward;
+  legR.position.z = 0.015 + rightLift * forward;
   legL.rotation.x = step * depthSwing;
   legR.rotation.x = -step * depthSwing;
-  legL.rotation.z = -0.030 - step * frontCant;
-  legR.rotation.z = 0.030 - step * frontCant;
+  legL.rotation.z = -0.012 - leftLift * 0.016;
+  legR.rotation.z = 0.012 + rightLift * 0.016;
 
-  // Arms now "paddle" visibly from the front instead of only moving toward/away
-  // from the camera. The range stays short so it still feels like a tiny sugar.
-  armL.rotation.x = -step * 0.085;
-  armR.rotation.x = step * 0.085;
-  armL.rotation.z = -0.20 - step * 0.13;
-  armR.rotation.z = 0.20 - step * 0.13;
-  armL.position.y = baseRig.armY + rightLift * 0.018;
-  armR.position.y = baseRig.armY + leftLift * 0.018;
+  // Arms are balance poles, not running pumps.
+  armL.rotation.x = -step * 0.025;
+  armR.rotation.x = step * 0.025;
+  armL.rotation.z = -0.175 - waddle * 0.028;
+  armR.rotation.z = 0.175 - waddle * 0.028;
+  armL.position.y = baseRig.armY + rightLift * 0.008;
+  armR.position.y = baseRig.armY + leftLift * 0.008;
 
-  character.position.y = 0.12 + hop * 0.040;
-  character.position.x = waddle * 0.018 * tune.waddle;
-  character.rotation.z = waddle * 0.060 * tune.waddle;
-  character.rotation.y = waddle * 0.018 * tune.waddle;
-  bodyRig.position.x = step * 0.020 * tune.waddle;
-  bodyRig.rotation.x = -0.035;
-  bodyRig.rotation.z = waddle * 0.026 * tune.waddle;
+  // The heavy cube lags behind the feet: small, slow-ish penguin wobble.
+  character.position.x = waddle * 0.010 * tune.waddle;
+  character.position.y = 0.12 + (leftLift + rightLift) * 0.006;
+  character.rotation.z = waddle * 0.032 * tune.waddle;
+  character.rotation.y = waddle * 0.008 * tune.waddle;
+  bodyRig.rotation.x = -0.016;
+  bodyRig.rotation.z = -waddle * 0.010 * tune.waddle;
 
-  const squash = Math.max(0, Math.cos(p * 2)) * 0.020;
-  character.scale.set(1 + squash, 1 - squash * 1.38, 1 + squash * 0.38);
-  blobShadow.scale.set(1 - hop * 0.09, 1 - hop * 0.09, 1);
-  blobShadow.material.opacity = 0.13 - hop * 0.025;
+  // Each double-contact gives a tiny "tok" squash instead of a jump.
+  const squash = landing * 0.012;
+  character.scale.set(1 + squash * 0.52, 1 - squash, 1 + squash * 0.28);
+  blobShadow.scale.set(1 + squash * 1.8, 1 + squash * 1.8, 1);
+  blobShadow.material.opacity = 0.12 + landing * 0.012;
 }
 
 function animateStumble(local) {
