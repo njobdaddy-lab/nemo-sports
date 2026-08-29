@@ -248,7 +248,6 @@ function createArm(side) {
   hand.position.y = -0.49;
   hand.scale.set(1.02, 0.92, 0.95);
   pivot.add(hand);
-  pivot.rotation.z = side * 0.10;
   character.add(pivot);
   return pivot;
 }
@@ -272,6 +271,15 @@ const armL = createArm(-1);
 const armR = createArm(1);
 const legL = createLeg(-1);
 const legR = createLeg(1);
+
+const baseRig = {
+  armLX: -0.73,
+  armRX: 0.73,
+  armY: 1.30,
+  legLX: -0.275,
+  legRX: 0.275,
+  legY: 0.52
+};
 
 const blobShadow = new THREE.Mesh(
   new THREE.CircleGeometry(0.62, 48),
@@ -429,6 +437,12 @@ function resetPose() {
   character.scale.set(1, 1, 1);
   bodyRig.rotation.set(0, 0, 0);
   bodyRig.position.set(0, 0, 0);
+
+  armL.position.set(baseRig.armLX, baseRig.armY, 0.03);
+  armR.position.set(baseRig.armRX, baseRig.armY, 0.03);
+  legL.position.set(baseRig.legLX, baseRig.legY, 0.015);
+  legR.position.set(baseRig.legRX, baseRig.legY, 0.015);
+
   armL.rotation.set(0, 0, -0.10);
   armR.rotation.set(0, 0, 0.10);
   legL.rotation.set(0, 0, 0);
@@ -449,28 +463,46 @@ function animateIdle(t) {
 
 function animateRun(t) {
   faceRun();
-  const p = t * 16.0 * tune.speed;
+
+  const p = t * 16.8 * tune.speed;
   const step = Math.sin(p);
   const hop = Math.abs(Math.sin(p));
-  const quickWaddle = Math.sin(p * 0.5);
-  const legSwing = 0.30 * tune.stride;
+  const waddle = Math.sin(p * 0.5);
+  const leftLift = Math.max(0, step);
+  const rightLift = Math.max(0, -step);
 
-  legL.rotation.x = step * legSwing;
-  legR.rotation.x = -step * legSwing;
-  legL.rotation.z = -0.025 - Math.max(0, -step) * 0.045;
-  legR.rotation.z = 0.025 + Math.max(0, step) * 0.045;
+  // Front-view readability is intentional here. Pure X-axis swings disappear
+  // when the character is viewed head-on, so feet also lift, separate sideways,
+  // and cant a little on Z. This keeps the "tiny frantic steps" readable at 0°.
+  const frontSpread = 0.052 * tune.stride;
+  const frontCant = 0.105 * tune.stride;
+  const depthSwing = 0.20 * tune.stride;
 
-  armL.rotation.x = -step * 0.12;
-  armR.rotation.x = step * 0.12;
-  armL.rotation.z = -0.16 - step * 0.025;
-  armR.rotation.z = 0.16 - step * 0.025;
+  legL.position.x = baseRig.legLX - step * frontSpread;
+  legR.position.x = baseRig.legRX - step * frontSpread;
+  legL.position.y = baseRig.legY + leftLift * 0.060;
+  legR.position.y = baseRig.legY + rightLift * 0.060;
+  legL.rotation.x = step * depthSwing;
+  legR.rotation.x = -step * depthSwing;
+  legL.rotation.z = -0.030 - step * frontCant;
+  legR.rotation.z = 0.030 - step * frontCant;
 
-  character.position.y = 0.12 + hop * 0.038;
-  character.rotation.z = quickWaddle * 0.052 * tune.waddle;
-  character.rotation.y = quickWaddle * 0.020 * tune.waddle;
-  bodyRig.position.x = step * 0.018 * tune.waddle;
-  bodyRig.rotation.x = -0.038;
-  bodyRig.rotation.z = quickWaddle * 0.022 * tune.waddle;
+  // Arms now "paddle" visibly from the front instead of only moving toward/away
+  // from the camera. The range stays short so it still feels like a tiny sugar.
+  armL.rotation.x = -step * 0.085;
+  armR.rotation.x = step * 0.085;
+  armL.rotation.z = -0.20 - step * 0.13;
+  armR.rotation.z = 0.20 - step * 0.13;
+  armL.position.y = baseRig.armY + rightLift * 0.018;
+  armR.position.y = baseRig.armY + leftLift * 0.018;
+
+  character.position.y = 0.12 + hop * 0.040;
+  character.position.x = waddle * 0.018 * tune.waddle;
+  character.rotation.z = waddle * 0.060 * tune.waddle;
+  character.rotation.y = waddle * 0.018 * tune.waddle;
+  bodyRig.position.x = step * 0.020 * tune.waddle;
+  bodyRig.rotation.x = -0.035;
+  bodyRig.rotation.z = waddle * 0.026 * tune.waddle;
 
   const squash = Math.max(0, Math.cos(p * 2)) * 0.020;
   character.scale.set(1 + squash, 1 - squash * 1.38, 1 + squash * 0.38);
