@@ -121,8 +121,6 @@ const character = new THREE.Group();
 character.position.y = 0.12;
 scene.add(character);
 
-// One shared rig root for the cube, face, arms and legs.
-// This keeps body lean/waddle connected to the limbs instead of animating as separate pieces.
 const bodyRig = new THREE.Group();
 character.add(bodyRig);
 
@@ -237,7 +235,6 @@ const footGeo = new THREE.SphereGeometry(0.12, 22, 16);
 
 function createArm(side) {
   const shoulder = new THREE.Group();
-  // Closer than v8, but still slightly outside the body silhouette so the arms remain readable.
   shoulder.position.set(side * 0.77, 1.29, 0.075);
   const upper = mesh(armGeo, mats.black);
   upper.position.y = -0.13;
@@ -444,7 +441,6 @@ function resetPose() {
 
 function animateIdle(t) {
   const breath = Math.sin(t * 2.1);
-  // Very small whole-rig breathing keeps the face, body and limbs visually connected.
   bodyRig.position.y = breath * 0.004;
   bodyRig.rotation.z = Math.sin(t * 1.15) * 0.010;
   character.scale.set(1 - breath * 0.004, 1 + breath * 0.007, 1 - breath * 0.004);
@@ -464,7 +460,12 @@ function animateRun(t) {
   const leftLift = Math.pow(Math.max(0, step), 1.65);
   const rightLift = Math.pow(Math.max(0, -step), 1.65);
   const landing = Math.pow(Math.abs(Math.cos(p)), 10);
-  const waddle = Math.sin(p * 0.5);
+
+  // Waddle is not a separate animation anymore.
+  // It is the direct result of which foot is currently lifted / which foot is supporting the body.
+  // left foot up -> weight moves onto right foot, right foot up -> weight moves onto left foot.
+  const supportShift = leftLift - rightLift;
+  const weightShift = supportShift * tune.waddle;
 
   const lift = 0.055 * tune.stride;
   const strideDepth = 0.125 * tune.stepLength;
@@ -479,38 +480,39 @@ function animateRun(t) {
   legL.rotation.z = -0.008 - leftLift * 0.008;
   legR.rotation.z = 0.008 + rightLift * 0.008;
 
-  // Bent-arm "hut-dul" swing, but kept closer to the body than v8.
-  // Because the arms now live under bodyRig, torso lean/waddle carries the shoulders naturally.
+  // Arms counter-balance the same step that creates the body weight shift.
   const armPump = step * (0.20 + 0.07 * tune.stepLength) * tune.arms;
   const elbowPump = step * 0.12 * tune.arms;
   armL.rotation.x = 0.02 + armPump;
   armR.rotation.x = -0.02 - armPump;
-  armL.rotation.y = -0.09 + step * 0.045 * tune.arms;
-  armR.rotation.y = 0.09 - step * 0.045 * tune.arms;
-  armL.rotation.z = -0.19 - waddle * 0.014 * tune.waddle - step * 0.014 * tune.arms;
-  armR.rotation.z = 0.19 - waddle * 0.014 * tune.waddle - step * 0.014 * tune.arms;
-  armL.position.x = baseRig.armLX - Math.max(0, step) * 0.006 * tune.arms;
-  armR.position.x = baseRig.armRX + Math.max(0, -step) * 0.006 * tune.arms;
+  armL.rotation.y = -0.08 + step * 0.040 * tune.arms;
+  armR.rotation.y = 0.08 - step * 0.040 * tune.arms;
+  armL.rotation.z = -0.18 - weightShift * 0.010 - step * 0.012 * tune.arms;
+  armR.rotation.z = 0.18 - weightShift * 0.010 - step * 0.012 * tune.arms;
+  armL.position.x = baseRig.armLX - Math.max(0, step) * 0.004 * tune.arms;
+  armR.position.x = baseRig.armRX + Math.max(0, -step) * 0.004 * tune.arms;
   armL.position.y = baseRig.armY - step * 0.010 * tune.arms;
   armR.position.y = baseRig.armY + step * 0.010 * tune.arms;
   armL.position.z = baseRig.armZ - step * 0.042 * tune.arms * tune.stepLength;
   armR.position.z = baseRig.armZ + step * 0.042 * tune.arms * tune.stepLength;
   elbowL.rotation.x = -0.92 - elbowPump;
   elbowR.rotation.x = -0.92 + elbowPump;
-  elbowL.rotation.z = 0.21 + step * 0.030 * tune.arms;
-  elbowR.rotation.z = -0.21 + step * 0.030 * tune.arms;
+  elbowL.rotation.z = 0.20 + step * 0.028 * tune.arms;
+  elbowR.rotation.z = -0.20 + step * 0.028 * tune.arms;
 
-  // Whole-body motion is now the parent motion: torso, shoulders and hips travel together.
-  character.position.x = waddle * 0.018 * tune.waddle;
-  character.position.y = 0.12 + (leftLift + rightLift) * 0.002;
-  character.rotation.z = waddle * 0.045 * tune.waddle;
-  character.rotation.y = step * 0.012 * tune.stepLength + waddle * 0.006 * tune.waddle;
+  // The entire character reacts to the supporting foot at the exact same cadence as the legs.
+  // No half-speed independent sway: the foot causes the weight transfer, and the cube follows it.
+  character.position.x = weightShift * 0.026;
+  character.position.y = 0.12 + (leftLift + rightLift) * 0.0015;
+  character.rotation.z = -weightShift * 0.055;
+  character.rotation.y = step * 0.010 * tune.stepLength;
 
-  bodyRig.position.x = -waddle * 0.008 * tune.waddle;
+  // Keep the shared rig neutral side-to-side so torso/arms/legs do not create a second unrelated sway.
+  bodyRig.position.x = 0;
   bodyRig.position.z = 0.006 + Math.abs(step) * 0.008 * tune.stepLength;
   bodyRig.rotation.x = -0.026;
-  bodyRig.rotation.y = -step * 0.009 * tune.stepLength;
-  bodyRig.rotation.z = -waddle * 0.018 * tune.waddle;
+  bodyRig.rotation.y = -step * 0.008 * tune.stepLength;
+  bodyRig.rotation.z = 0;
 
   const squash = landing * 0.008;
   character.scale.set(1 + squash * 0.45, 1 - squash, 1 + squash * 0.24);
