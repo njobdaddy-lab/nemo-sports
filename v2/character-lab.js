@@ -236,24 +236,19 @@ const footGeo = new THREE.SphereGeometry(0.12, 22, 16);
 function createArm(side) {
   const shoulder = new THREE.Group();
   shoulder.position.set(side * 0.73, 1.30, 0.03);
-
   const upper = mesh(armGeo, mats.black);
   upper.position.y = -0.13;
   shoulder.add(upper);
-
   const elbow = new THREE.Group();
   elbow.position.y = -0.29;
   shoulder.add(elbow);
-
   const forearm = mesh(armGeo, mats.black);
   forearm.position.y = -0.13;
   elbow.add(forearm);
-
   const hand = mesh(handGeo, mats.black);
   hand.position.y = -0.31;
   hand.scale.set(1.02, 0.92, 0.95);
   elbow.add(hand);
-
   shoulder.userData.elbow = elbow;
   character.add(shoulder);
   return shoulder;
@@ -291,7 +286,7 @@ blobShadow.rotation.x = -Math.PI / 2;
 blobShadow.position.y = 0.115;
 scene.add(blobShadow);
 
-const tune = { speed: 1, waddle: 1, stride: 1, arms: 1 };
+const tune = { speed: 1, waddle: 1, stride: 1, stepLength: 1, arms: 1 };
 let state = 'idle';
 let stateStarted = performance.now() / 1000;
 
@@ -309,7 +304,7 @@ document.querySelector('#resetView').addEventListener('click', () => {
   controls.update();
 });
 
-for (const id of ['speed', 'waddle', 'stride', 'arms']) {
+for (const id of ['speed', 'waddle', 'stride', 'stepLength', 'arms']) {
   const input = document.querySelector(`#${id}`);
   const value = document.querySelector(`#${id}Value`);
   input.addEventListener('input', () => {
@@ -465,20 +460,21 @@ function animateRun(t) {
   const landing = Math.pow(Math.abs(Math.cos(p)), 10);
   const waddle = Math.sin(p * 0.5);
 
-  const lift = 0.075 * tune.stride;
-  const forward = 0.050 * tune.stride;
-  const depthSwing = 0.075 * tune.stride;
+  // Keep the feet quick, but make each step travel forward/back instead of hopping in place.
+  const lift = 0.055 * tune.stride;
+  const strideDepth = 0.125 * tune.stepLength;
+  const depthSwing = 0.055 + 0.050 * tune.stepLength;
 
   legL.position.y = baseRig.legY + leftLift * lift;
   legR.position.y = baseRig.legY + rightLift * lift;
-  legL.position.z = 0.015 + leftLift * forward;
-  legR.position.z = 0.015 + rightLift * forward;
+  legL.position.z = 0.015 + step * strideDepth + leftLift * 0.012;
+  legR.position.z = 0.015 - step * strideDepth + rightLift * 0.012;
   legL.rotation.x = step * depthSwing;
   legR.rotation.x = -step * depthSwing;
-  legL.rotation.z = -0.010 - leftLift * 0.012;
-  legR.rotation.z = 0.010 + rightLift * 0.012;
+  legL.rotation.z = -0.010 - leftLift * 0.010;
+  legR.rotation.z = 0.010 + rightLift * 0.010;
 
-  const armPump = step * 0.28 * tune.arms;
+  const armPump = step * (0.22 + 0.08 * tune.stepLength) * tune.arms;
   const elbowPump = step * 0.12 * tune.arms;
   armL.rotation.x = armPump;
   armR.rotation.x = -armPump;
@@ -488,25 +484,28 @@ function animateRun(t) {
   armR.rotation.z = 0.14 - waddle * 0.018 * tune.waddle - step * 0.018 * tune.arms;
   armL.position.y = baseRig.armY - step * 0.012 * tune.arms;
   armR.position.y = baseRig.armY + step * 0.012 * tune.arms;
-  armL.position.z = 0.03 - step * 0.035 * tune.arms;
-  armR.position.z = 0.03 + step * 0.035 * tune.arms;
+  armL.position.z = 0.03 - step * 0.040 * tune.arms * tune.stepLength;
+  armR.position.z = 0.03 + step * 0.040 * tune.arms * tune.stepLength;
   elbowL.rotation.x = -0.92 - elbowPump;
   elbowR.rotation.x = -0.92 + elbowPump;
   elbowL.rotation.z = 0.25 + step * 0.045 * tune.arms;
   elbowR.rotation.z = -0.25 + step * 0.045 * tune.arms;
 
+  // Less vertical bounce, more forward intent and alternating weight transfer.
   character.position.x = waddle * 0.026 * tune.waddle;
-  character.position.y = 0.12 + (leftLift + rightLift) * 0.006;
+  character.position.y = 0.12 + (leftLift + rightLift) * 0.0025;
   character.rotation.z = waddle * 0.070 * tune.waddle;
-  character.rotation.y = waddle * 0.010 * tune.waddle;
+  character.rotation.y = step * 0.018 * tune.stepLength + waddle * 0.008 * tune.waddle;
   bodyRig.position.x = -waddle * 0.010 * tune.waddle;
-  bodyRig.rotation.x = -0.016;
+  bodyRig.position.z = 0.010 + Math.abs(step) * 0.012 * tune.stepLength;
+  bodyRig.rotation.x = -0.034;
+  bodyRig.rotation.y = -step * 0.012 * tune.stepLength;
   bodyRig.rotation.z = -waddle * 0.020 * tune.waddle;
 
-  const squash = landing * 0.012;
-  character.scale.set(1 + squash * 0.52, 1 - squash, 1 + squash * 0.28);
-  blobShadow.scale.set(1 + squash * 1.8, 1 + squash * 1.8, 1);
-  blobShadow.material.opacity = 0.12 + landing * 0.012;
+  const squash = landing * 0.008;
+  character.scale.set(1 + squash * 0.45, 1 - squash, 1 + squash * 0.24);
+  blobShadow.scale.set(1 + squash * 1.4, 1 + squash * 1.4, 1);
+  blobShadow.material.opacity = 0.12 + landing * 0.009;
 }
 
 function animateStumble(local) {
