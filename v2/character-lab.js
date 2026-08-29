@@ -121,6 +121,8 @@ const character = new THREE.Group();
 character.position.y = 0.12;
 scene.add(character);
 
+// Torso rig: body, face and arms react to the support leg.
+// Legs live on the character root so the stance foot can stay planted on the floor.
 const bodyRig = new THREE.Group();
 character.add(bodyRig);
 
@@ -235,7 +237,7 @@ const footGeo = new THREE.SphereGeometry(0.12, 22, 16);
 
 function createArm(side) {
   const shoulder = new THREE.Group();
-  shoulder.position.set(side * 0.77, 1.29, 0.075);
+  shoulder.position.set(side * 0.75, 1.29, 0.07);
   const upper = mesh(armGeo, mats.black);
   upper.position.y = -0.13;
   shoulder.add(upper);
@@ -265,7 +267,7 @@ function createLeg(side) {
   foot.position.set(side * 0.015, -0.48, 0.055);
   foot.scale.set(1.25, 0.55, 1.18);
   pivot.add(foot);
-  bodyRig.add(pivot);
+  character.add(pivot);
   return pivot;
 }
 
@@ -276,7 +278,7 @@ const legR = createLeg(1);
 const elbowL = armL.userData.elbow;
 const elbowR = armR.userData.elbow;
 
-const baseRig = { armLX: -0.77, armRX: 0.77, armY: 1.29, armZ: 0.075, legLX: -0.275, legRX: 0.275, legY: 0.52 };
+const baseRig = { armLX: -0.75, armRX: 0.75, armY: 1.29, armZ: 0.07, legLX: -0.275, legRX: 0.275, legY: 0.52 };
 
 const blobShadow = new THREE.Mesh(
   new THREE.CircleGeometry(0.62, 48),
@@ -421,13 +423,14 @@ function resetPose() {
   character.scale.set(1, 1, 1);
   bodyRig.rotation.set(0, 0, 0);
   bodyRig.position.set(0, 0, 0);
+  bodyRig.scale.set(1, 1, 1);
 
   armL.position.set(baseRig.armLX, baseRig.armY, baseRig.armZ);
   armR.position.set(baseRig.armRX, baseRig.armY, baseRig.armZ);
-  armL.rotation.set(0.02, -0.08, -0.18);
-  armR.rotation.set(-0.02, 0.08, 0.18);
-  elbowL.rotation.set(-0.90, 0, 0.20);
-  elbowR.rotation.set(-0.90, 0, -0.20);
+  armL.rotation.set(0.02, -0.08, -0.17);
+  armR.rotation.set(-0.02, 0.08, 0.17);
+  elbowL.rotation.set(-0.90, 0, 0.18);
+  elbowR.rotation.set(-0.90, 0, -0.18);
 
   legL.position.set(baseRig.legLX, baseRig.legY, 0.015);
   legR.position.set(baseRig.legRX, baseRig.legY, 0.015);
@@ -443,9 +446,9 @@ function animateIdle(t) {
   const breath = Math.sin(t * 2.1);
   bodyRig.position.y = breath * 0.004;
   bodyRig.rotation.z = Math.sin(t * 1.15) * 0.010;
-  character.scale.set(1 - breath * 0.004, 1 + breath * 0.007, 1 - breath * 0.004);
-  armL.rotation.z = -0.18 + Math.sin(t * 1.7) * 0.018;
-  armR.rotation.z = 0.18 - Math.sin(t * 1.7) * 0.018;
+  bodyRig.scale.set(1 - breath * 0.004, 1 + breath * 0.007, 1 - breath * 0.004);
+  armL.rotation.z = -0.17 + Math.sin(t * 1.7) * 0.018;
+  armR.rotation.z = 0.17 - Math.sin(t * 1.7) * 0.018;
   armL.rotation.y = -0.08 + Math.sin(t * 1.25) * 0.012;
   armR.rotation.y = 0.08 - Math.sin(t * 1.25) * 0.012;
   elbowL.rotation.x = -0.90 + Math.sin(t * 1.5) * 0.018;
@@ -456,66 +459,63 @@ function animateRun(t) {
   faceRun();
 
   const p = t * 17.2 * tune.speed;
-  const step = Math.sin(p);
-  const leftLift = Math.pow(Math.max(0, step), 1.65);
-  const rightLift = Math.pow(Math.max(0, -step), 1.65);
-  const landing = Math.pow(Math.abs(Math.cos(p)), 10);
+  const gait = Math.sin(p);
+  const travel = -Math.cos(p);
+  const contactDeadZone = 0.16;
+  const liftRange = 1 - contactDeadZone;
 
-  // Waddle is not a separate animation anymore.
-  // It is the direct result of which foot is currently lifted / which foot is supporting the body.
-  // left foot up -> weight moves onto right foot, right foot up -> weight moves onto left foot.
-  const supportShift = leftLift - rightLift;
-  const weightShift = supportShift * tune.waddle;
+  // Only the swing foot lifts. Around each foot-change there is a short two-feet-on-floor moment.
+  const leftLift = Math.pow(Math.max(0, (gait - contactDeadZone) / liftRange), 1.35);
+  const rightLift = Math.pow(Math.max(0, (-gait - contactDeadZone) / liftRange), 1.35);
+  const singleSupport = Math.max(leftLift, rightLift);
+  const supportShift = (leftLift - rightLift) * tune.waddle;
+  const landing = Math.pow(Math.abs(Math.cos(p)), 12);
 
-  const lift = 0.055 * tune.stride;
-  const strideDepth = 0.125 * tune.stepLength;
-  const depthSwing = 0.055 + 0.050 * tune.stepLength;
+  const lift = 0.068 * tune.stride;
+  const strideDepth = 0.135 * tune.stepLength;
+  const swingTilt = 0.12 * tune.stepLength;
 
+  // Stance foot stays at baseRig.legY: planted on the floor.
+  // The other foot rises and travels through the stride arc.
   legL.position.y = baseRig.legY + leftLift * lift;
   legR.position.y = baseRig.legY + rightLift * lift;
-  legL.position.z = 0.015 + step * strideDepth + leftLift * 0.012;
-  legR.position.z = 0.015 - step * strideDepth + rightLift * 0.012;
-  legL.rotation.x = step * depthSwing;
-  legR.rotation.x = -step * depthSwing;
-  legL.rotation.z = -0.008 - leftLift * 0.008;
-  legR.rotation.z = 0.008 + rightLift * 0.008;
+  legL.position.z = 0.015 + travel * strideDepth;
+  legR.position.z = 0.015 - travel * strideDepth;
+  legL.rotation.x = leftLift * travel * swingTilt;
+  legR.rotation.x = -rightLift * travel * swingTilt;
+  legL.rotation.z = -0.006 - leftLift * 0.008;
+  legR.rotation.z = 0.006 + rightLift * 0.008;
 
-  // Arms counter-balance the same step that creates the body weight shift.
-  const armPump = step * (0.20 + 0.07 * tune.stepLength) * tune.arms;
-  const elbowPump = step * 0.12 * tune.arms;
-  armL.rotation.x = 0.02 + armPump;
-  armR.rotation.x = -0.02 - armPump;
-  armL.rotation.y = -0.08 + step * 0.040 * tune.arms;
-  armR.rotation.y = 0.08 - step * 0.040 * tune.arms;
-  armL.rotation.z = -0.18 - weightShift * 0.010 - step * 0.012 * tune.arms;
-  armR.rotation.z = 0.18 - weightShift * 0.010 - step * 0.012 * tune.arms;
-  armL.position.x = baseRig.armLX - Math.max(0, step) * 0.004 * tune.arms;
-  armR.position.x = baseRig.armRX + Math.max(0, -step) * 0.004 * tune.arms;
-  armL.position.y = baseRig.armY - step * 0.010 * tune.arms;
-  armR.position.y = baseRig.armY + step * 0.010 * tune.arms;
-  armL.position.z = baseRig.armZ - step * 0.042 * tune.arms * tune.stepLength;
-  armR.position.z = baseRig.armZ + step * 0.042 * tune.arms * tune.stepLength;
-  elbowL.rotation.x = -0.92 - elbowPump;
-  elbowR.rotation.x = -0.92 + elbowPump;
-  elbowL.rotation.z = 0.20 + step * 0.028 * tune.arms;
-  elbowR.rotation.z = -0.20 + step * 0.028 * tune.arms;
+  // Arms swing opposite the feet, while inheriting the torso's support-leg lean.
+  const armSwing = travel * (0.18 + 0.07 * tune.stepLength) * tune.arms;
+  const elbowSwing = travel * 0.09 * tune.arms;
+  armL.rotation.x = 0.02 - armSwing;
+  armR.rotation.x = -0.02 + armSwing;
+  armL.rotation.y = -0.075 + gait * 0.028 * tune.arms;
+  armR.rotation.y = 0.075 - gait * 0.028 * tune.arms;
+  armL.rotation.z = -0.17 - supportShift * 0.010;
+  armR.rotation.z = 0.17 - supportShift * 0.010;
+  armL.position.y = baseRig.armY - gait * 0.006 * tune.arms;
+  armR.position.y = baseRig.armY + gait * 0.006 * tune.arms;
+  armL.position.z = baseRig.armZ - armSwing * 0.13;
+  armR.position.z = baseRig.armZ + armSwing * 0.13;
+  elbowL.rotation.x = -0.90 + elbowSwing;
+  elbowR.rotation.x = -0.90 - elbowSwing;
+  elbowL.rotation.z = 0.18 + gait * 0.020 * tune.arms;
+  elbowR.rotation.z = -0.18 + gait * 0.020 * tune.arms;
 
-  // The entire character reacts to the supporting foot at the exact same cadence as the legs.
-  // No half-speed independent sway: the foot causes the weight transfer, and the cube follows it.
-  character.position.x = weightShift * 0.026;
-  character.position.y = 0.12 + (leftLift + rightLift) * 0.0015;
-  character.rotation.z = -weightShift * 0.055;
-  character.rotation.y = step * 0.010 * tune.stepLength;
-
-  // Keep the shared rig neutral side-to-side so torso/arms/legs do not create a second unrelated sway.
-  bodyRig.position.x = 0;
-  bodyRig.position.z = 0.006 + Math.abs(step) * 0.008 * tune.stepLength;
+  // The torso moves because one leg is supporting the cube.
+  // No independent waddle oscillator: same gait phase, same support event.
+  bodyRig.position.x = supportShift * 0.042;
+  bodyRig.position.y = -singleSupport * 0.010 * tune.waddle;
+  bodyRig.position.z = 0.008 + Math.abs(travel) * 0.004 * tune.stepLength;
   bodyRig.rotation.x = -0.026;
-  bodyRig.rotation.y = -step * 0.008 * tune.stepLength;
-  bodyRig.rotation.z = 0;
+  bodyRig.rotation.y = -travel * 0.010 * tune.stepLength;
+  bodyRig.rotation.z = -supportShift * 0.052;
 
+  // Squash happens at foot exchange, but only the torso squashes so the planted foot stays planted.
   const squash = landing * 0.008;
-  character.scale.set(1 + squash * 0.45, 1 - squash, 1 + squash * 0.24);
+  bodyRig.scale.set(1 + squash * 0.45, 1 - squash, 1 + squash * 0.24);
   blobShadow.scale.set(1 + squash * 1.4, 1 + squash * 1.4, 1);
   blobShadow.material.opacity = 0.12 + landing * 0.009;
 }
