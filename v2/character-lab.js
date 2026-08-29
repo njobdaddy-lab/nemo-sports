@@ -164,6 +164,18 @@ function createXEye(x) {
 const xEyeL = createXEye(-0.235);
 const xEyeR = createXEye(0.235);
 
+function createHappyEye(x) {
+  const eye = mesh(new THREE.TorusGeometry(0.105, 0.020, 10, 28, Math.PI), mats.black, false);
+  eye.position.set(x, 0.065, 0.078);
+  eye.scale.set(1.0, 0.80, 0.42);
+  eye.visible = false;
+  face.add(eye);
+  return eye;
+}
+
+const happyEyeL = createHappyEye(-0.235);
+const happyEyeR = createHappyEye(0.235);
+
 function createBrow(x) {
   const brow = mesh(new RoundedBoxGeometry(0.19, 0.035, 0.035, 4, 0.015), mats.black, false);
   brow.position.set(x, 0.325, 0.05);
@@ -328,8 +340,12 @@ function resetFace() {
   eyeR.visible = true;
   xEyeL.visible = false;
   xEyeR.visible = false;
+  happyEyeL.visible = false;
+  happyEyeR.visible = false;
   eyeL.scale.set(1, 1, 1);
   eyeR.scale.set(1, 1, 1);
+  happyEyeL.scale.set(1.0, 0.80, 0.42);
+  happyEyeR.scale.set(1.0, 0.80, 0.42);
   browL.position.set(-0.235, 0.325, 0.05);
   browR.position.set(0.235, 0.325, 0.05);
   browL.rotation.z = -0.05;
@@ -417,15 +433,21 @@ function faceRecover(k) {
 }
 
 function faceVictory(local) {
-  eyeL.scale.set(1.08, 0.62, 1);
-  eyeR.scale.set(1.08, 0.62, 1);
-  browL.position.y = 0.375;
-  browR.position.y = 0.375;
-  browL.rotation.z = 0.13;
-  browR.rotation.z = -0.13;
-  victoryMouth.scale.set(1.22, 1.04, 1);
+  // Squeezed crescent eyes + huge open smile: unmistakably "I won!" instead of sleepy/smug.
+  eyeL.visible = false;
+  eyeR.visible = false;
+  happyEyeL.visible = true;
+  happyEyeR.visible = true;
+  const joy = 1 + Math.sin(local * 8.2) * 0.035;
+  happyEyeL.scale.set(1.05 * joy, 0.82 * joy, 0.42);
+  happyEyeR.scale.set(1.05 * joy, 0.82 * joy, 0.42);
+  browL.position.y = 0.405;
+  browR.position.y = 0.405;
+  browL.rotation.z = 0.18;
+  browR.rotation.z = -0.18;
+  victoryMouth.scale.set(1.48, 1.30 + Math.sin(local * 8.2) * 0.035, 1);
   showOnlyMouth('victory');
-  cheeks.forEach(c => { c.scale.set(1.48, 0.70, 0.25); c.material.opacity = 1; });
+  cheeks.forEach(c => { c.scale.set(1.58, 0.75, 0.25); c.material.opacity = 1; });
   victoryFX.visible = true;
   victoryFX.rotation.y = Math.sin(local * 2.8) * 0.12;
   victoryFX.children.forEach((star, i) => {
@@ -645,7 +667,6 @@ function animateVictory(local) {
   bodyRig.position.y = -anticipation * 0.018;
   bodyRig.scale.set(1 + anticipation * 0.016, 1 - anticipation * 0.026, 1 + anticipation * 0.010);
 
-  // Clear V-shaped winner pose: fists above the cube, not straight out to the sides.
   armL.rotation.z = -2.46 + fistPulse * 0.045;
   armR.rotation.z = 2.46 - fistPulse * 0.045;
   armL.rotation.x = -0.08 + fistPulse * 0.035;
@@ -657,7 +678,6 @@ function animateVictory(local) {
   elbowL.rotation.z = 0.10;
   elbowR.rotation.z = -0.10;
 
-  // Feet leave the floor together on the cheer jump, then land together.
   legL.rotation.x = jump * 0.18;
   legR.rotation.x = -jump * 0.18;
   legL.rotation.z = -jump * 0.07;
