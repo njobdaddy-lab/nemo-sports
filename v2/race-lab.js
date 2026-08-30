@@ -13,45 +13,139 @@ stage.appendChild(renderer.domElement);
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xcfeafa);
-scene.fog = new THREE.Fog(0xcfeafa, 24, 48);
+scene.fog = new THREE.Fog(0xcfeafa, 38, 78);
 
-const camera = new THREE.PerspectiveCamera(48, 1, .1, 120);
+const camera = new THREE.PerspectiveCamera(48, 1, .1, 160);
 camera.position.set(-4, 5.5, -8);
 
 scene.add(new THREE.HemisphereLight(0xffffff, 0xa7b88e, 2.3));
 const sun = new THREE.DirectionalLight(0xfff5df, 4.1);
-sun.position.set(-8, 14, -6);
+sun.position.set(-10, 18, -8);
 sun.castShadow = true;
 sun.shadow.mapSize.set(2048, 2048);
-sun.shadow.camera.left = -20; sun.shadow.camera.right = 20; sun.shadow.camera.top = 20; sun.shadow.camera.bottom = -20;
+sun.shadow.camera.left = -28;
+sun.shadow.camera.right = 28;
+sun.shadow.camera.top = 28;
+sun.shadow.camera.bottom = -28;
 scene.add(sun);
 
-const grass = new THREE.Mesh(new THREE.CircleGeometry(32,96), new THREE.MeshStandardMaterial({color:0xb9d69a,roughness:.96}));
-grass.rotation.x = -Math.PI/2; grass.receiveShadow = true; scene.add(grass);
+const grass = new THREE.Mesh(
+  new THREE.CircleGeometry(44, 128),
+  new THREE.MeshStandardMaterial({ color:0xb9d69a, roughness:.96 })
+);
+grass.rotation.x = -Math.PI / 2;
+grass.receiveShadow = true;
+scene.add(grass);
 
-const outerRX=11, outerRZ=7, innerRX=5.3, innerRZ=2.65, centerRX=8.15, centerRZ=4.75;
-function ellipsePath(rx,rz,y,color){
-  const curve=new THREE.EllipseCurve(0,0,rx,rz,0,Math.PI*2,false,0);
-  const pts=curve.getPoints(180).map(p=>new THREE.Vector3(p.x,y,p.y));
-  return new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color}));
+const controlPoints = [
+  new THREE.Vector3(-9, 0, -5),
+  new THREE.Vector3(-3, 0, -5),
+  new THREE.Vector3(4, 0, -5),
+  new THREE.Vector3(9, 0, -3.2),
+  new THREE.Vector3(10, 0, .6),
+  new THREE.Vector3(8, 0, 3.4),
+  new THREE.Vector3(4.6, 0, 3.6),
+  new THREE.Vector3(2.8, 0, 6.2),
+  new THREE.Vector3(-2.4, 0, 6.5),
+  new THREE.Vector3(-7.2, 0, 5.2),
+  new THREE.Vector3(-10, 0, 2.2),
+  new THREE.Vector3(-8.8, 0, -.4),
+  new THREE.Vector3(-5.1, 0, .2),
+  new THREE.Vector3(-2.2, 0, -1.4),
+  new THREE.Vector3(-5.2, 0, -3.1),
+  new THREE.Vector3(-8.3, 0, -3.0)
+];
+const trackCurve = new THREE.CatmullRomCurve3(controlPoints, true, 'centripetal', .45);
+const trackWidth = 3.35;
+const halfTrack = trackWidth * .5;
+const TRACK_SAMPLES = 360;
+const trackSamples = [];
+const trackNormals = [];
+for (let i = 0; i < TRACK_SAMPLES; i++) {
+  const t = i / TRACK_SAMPLES;
+  const p = trackCurve.getPointAt(t);
+  const tangent = trackCurve.getTangentAt(t).normalize();
+  trackSamples.push(p);
+  trackNormals.push(new THREE.Vector3(tangent.z, 0, -tangent.x).normalize());
 }
-const roadShape=new THREE.Shape();
-roadShape.absellipse(0,0,outerRX,outerRZ,0,Math.PI*2,false,0);
-const hole=new THREE.Path(); hole.absellipse(0,0,innerRX,innerRZ,0,Math.PI*2,true,0); roadShape.holes.push(hole);
-const road=new THREE.Mesh(new THREE.ShapeGeometry(roadShape,128),new THREE.MeshStandardMaterial({color:0x59616b,roughness:.9}));
-road.rotation.x=-Math.PI/2; road.position.y=.025; road.receiveShadow=true; scene.add(road);
-scene.add(ellipsePath(outerRX-.18,outerRZ-.18,.045,0xf6f1e9),ellipsePath(innerRX+.18,innerRZ+.18,.045,0xf6f1e9));
+const trackLength = trackCurve.getLength();
 
-const dashMat=new THREE.MeshStandardMaterial({color:0xffefd0,roughness:.8});
-for(let i=0;i<36;i++){
-  const a=i/36*Math.PI*2,x=centerRX*Math.cos(a),z=centerRZ*Math.sin(a),tangent=Math.atan2(centerRZ*Math.cos(a),-centerRX*Math.sin(a));
-  const dash=new THREE.Mesh(new THREE.BoxGeometry(.62,.025,.09),dashMat);
-  dash.position.set(x,.055,z); dash.rotation.y=-tangent; dash.receiveShadow=true; scene.add(dash);
+function sampleTrack(t, lane = 0) {
+  const wrapped = ((t % 1) + 1) % 1;
+  const p = trackCurve.getPointAt(wrapped);
+  const tangent = trackCurve.getTangentAt(wrapped).normalize();
+  const normal = new THREE.Vector3(tangent.z, 0, -tangent.x).normalize();
+  return { p:p.addScaledVector(normal, lane), tangent, normal, wrapped };
 }
-const startMat=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.75});
-for(let i=-3;i<=3;i++){const tile=new THREE.Mesh(new THREE.BoxGeometry(.55,.03,.42),startMat);tile.position.set(i*.55,.065,-centerRZ);tile.receiveShadow=true;scene.add(tile);}
 
-const mats={
+function buildRibbon(width, y, material) {
+  const vertices = [];
+  const indices = [];
+  for (let i = 0; i < TRACK_SAMPLES; i++) {
+    const p = trackSamples[i];
+    const n = trackNormals[i];
+    vertices.push(p.x + n.x * width/2, y, p.z + n.z * width/2);
+    vertices.push(p.x - n.x * width/2, y, p.z - n.z * width/2);
+  }
+  for (let i = 0; i < TRACK_SAMPLES; i++) {
+    const j = (i + 1) % TRACK_SAMPLES;
+    const a = i * 2, b = a + 1, c = j * 2, d = c + 1;
+    indices.push(a, c, b, b, c, d);
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+  geo.setIndex(indices);
+  geo.computeVertexNormals();
+  const mesh = new THREE.Mesh(geo, material);
+  mesh.receiveShadow = true;
+  return mesh;
+}
+
+const roadMat = new THREE.MeshStandardMaterial({ color:0x59616b, roughness:.9, side:THREE.DoubleSide });
+const road = buildRibbon(trackWidth, .03, roadMat);
+scene.add(road);
+
+function makeBoundary(side) {
+  const pts = trackSamples.map((p, i) => p.clone().addScaledVector(trackNormals[i], side * (halfTrack - .06)).setY(.07));
+  return new THREE.LineLoop(
+    new THREE.BufferGeometry().setFromPoints(pts),
+    new THREE.LineBasicMaterial({ color:0xf7f1e7 })
+  );
+}
+scene.add(makeBoundary(1), makeBoundary(-1));
+
+const dashMat = new THREE.MeshStandardMaterial({ color:0xffefd0, roughness:.8 });
+for (let i = 0; i < 54; i += 2) {
+  const t = i / 54;
+  const s = sampleTrack(t, 0);
+  const dash = new THREE.Mesh(new THREE.BoxGeometry(.58, .025, .085), dashMat);
+  dash.position.copy(s.p).setY(.07);
+  dash.rotation.y = Math.atan2(s.tangent.x, s.tangent.z);
+  dash.receiveShadow = true;
+  scene.add(dash);
+}
+
+const start = sampleTrack(0);
+const startAngle = Math.atan2(start.tangent.x, start.tangent.z);
+const startMat = new THREE.MeshStandardMaterial({ color:0xffffff, roughness:.75 });
+for (let i = -3; i <= 3; i++) {
+  const tile = new THREE.Mesh(new THREE.BoxGeometry(.42, .03, .44), startMat);
+  tile.position.copy(start.p).addScaledVector(start.normal, i * .46).setY(.075);
+  tile.rotation.y = startAngle;
+  tile.receiveShadow = true;
+  scene.add(tile);
+}
+
+const coneMat = new THREE.MeshStandardMaterial({ color:0xf5b45f, roughness:.7 });
+for (const t of [.165, .205, .37, .405, .51, .555, .69, .745, .84]) {
+  const s = sampleTrack(t, halfTrack + .48);
+  const cone = new THREE.Mesh(new THREE.ConeGeometry(.14, .45, 12), coneMat);
+  cone.position.copy(s.p).setY(.24);
+  cone.castShadow = true;
+  scene.add(cone);
+}
+
+const mats = {
   sugar:new THREE.MeshStandardMaterial({color:0xf3e8cf,roughness:.9}),
   black:new THREE.MeshStandardMaterial({color:0x17191e,roughness:.48}),
   wheel:new THREE.MeshStandardMaterial({color:0x202329,roughness:.62}),
@@ -63,7 +157,8 @@ const mats={
 function mesh(g,m,c=true){const o=new THREE.Mesh(g,m);o.castShadow=c;o.receiveShadow=c;return o;}
 
 function makeRacer(color=0xf3e8cf,isPlayer=false){
-  const root=new THREE.Group(), visual=new THREE.Group(); root.add(visual);
+  const root=new THREE.Group(), visual=new THREE.Group();
+  root.add(visual);
   const body=mesh(new RoundedBoxGeometry(1.18,.98,1.34,6,.13),isPlayer?mats.sugar:new THREE.MeshStandardMaterial({color,roughness:.82}));
   body.position.y=.88; visual.add(body);
   const face=new THREE.Group(); face.position.set(0,.94,.69); visual.add(face);
@@ -77,41 +172,58 @@ function makeRacer(color=0xf3e8cf,isPlayer=false){
     const wheel=mesh(wheelGeo,mats.wheel); wheel.rotation.z=Math.PI/2; wheel.position.set(sx*.58,.36,sz*.42); visual.add(wheel);
     const rim=mesh(new THREE.CylinderGeometry(.095,.095,.164,18),mats.rim); rim.rotation.z=Math.PI/2; rim.position.copy(wheel.position); visual.add(rim);
   }
-  for(const x of[-.25,.25]){const pipe=mesh(new THREE.CylinderGeometry(.07,.09,.34,14),mats.chrome);pipe.rotation.x=Math.PI/2;pipe.position.set(x,.52,-.78);visual.add(pipe);}
-  const spoiler=mesh(new RoundedBoxGeometry(.72,.08,.12,4,.03),mats.black);spoiler.position.set(0,1.18,-.66);visual.add(spoiler);
+  for(const x of[-.25,.25]){
+    const pipe=mesh(new THREE.CylinderGeometry(.07,.09,.34,14),mats.chrome);
+    pipe.rotation.x=Math.PI/2; pipe.position.set(x,.52,-.78); visual.add(pipe);
+  }
+  const spoiler=mesh(new RoundedBoxGeometry(.72,.08,.12,4,.03),mats.black); spoiler.position.set(0,1.18,-.66); visual.add(spoiler);
   root.userData.visual=visual;
   root.userData.impactOffset=new THREE.Vector3();
   root.userData.speedPenalty=0;
-  scene.add(root); return root;
+  scene.add(root);
+  return root;
 }
 
 const player=makeRacer(0xf3e8cf,true);
 const aiDefs=[
-  {color:0xb95d48,speed:8.15,lane:-.55,offset:-.55},
-  {color:0xf48ab1,speed:8.5,lane:.15,offset:-1.1},
-  {color:0xc99c62,speed:8.8,lane:.62,offset:-1.65}
+  {color:0xb95d48,speed:8.15,lane:-.5,offset:-.018},
+  {color:0xf48ab1,speed:8.45,lane:.1,offset:-.036},
+  {color:0xc99c62,speed:8.75,lane:.52,offset:-.054}
 ];
 const ais=aiDefs.map((d,i)=>{
   const o=makeRacer(d.color,false);
-  o.userData.def=d; o.userData.progress=d.offset; o.userData.lapProgress=d.offset; o.userData.seed=i*2.1;
-  o.userData.prevPos=new THREE.Vector3(); o.userData.velocity=new THREE.Vector3();
+  o.userData.def=d;
+  o.userData.progress=d.offset;
+  o.userData.lapProgress=d.offset;
+  o.userData.seed=i*2.1;
+  o.userData.prevPos=new THREE.Vector3();
+  o.userData.velocity=new THREE.Vector3();
   return o;
 });
 
 const input={left:false,right:false,gas:false,drift:false};
 const velocity=new THREE.Vector3();
-let yaw=Math.PI/2, boostTimer=0, wasDrifting=false, collisionCooldown=0;
+let yaw=startAngle, boostTimer=0, wasDrifting=false, collisionCooldown=0;
 let boostGauge=0, boostStock=0, driftPending=0, driftClean=true, currentDrifting=false;
-let cumulative=0,lastTheta=-Math.PI/2,raceState='countdown',raceStart=0,countdownStart=performance.now()/1000;
+let playerProgress=0, lastTrackProgress=0, raceState='countdown', raceStart=0, countdownStart=performance.now()/1000;
 
 const lapEl=document.querySelector('#lap'),rankEl=document.querySelector('#rank'),speedEl=document.querySelector('#speed');
 const msg=document.querySelector('#message'),mini=document.querySelector('#mini'),finish=document.querySelector('#finish'),finishRank=document.querySelector('#finishRank'),finishTime=document.querySelector('#finishTime');
 const boostBtn=document.querySelector('#boost'),boostPctEl=document.querySelector('#boostPct'),boostStockEl=document.querySelector('#boostStock'),boostFillEl=document.querySelector('#boostFill'),boostPendingEl=document.querySelector('#boostPending');
 
 function normalizeAngle(a){while(a>Math.PI)a-=Math.PI*2;while(a<-Math.PI)a+=Math.PI*2;return a;}
-function trackState(x,z){
-  const outer=x*x/(outerRX*outerRX)+z*z/(outerRZ*outerRZ),inner=x*x/(innerRX*innerRX)+z*z/(innerRZ*innerRZ);
-  return {on:outer<=1&&inner>=1,outer,inner};
+function nearestTrackState(x,z){
+  let bestI=0,bestD2=Infinity;
+  for(let i=0;i<TRACK_SAMPLES;i++){
+    const p=trackSamples[i];
+    const dx=x-p.x,dz=z-p.z,d2=dx*dx+dz*dz;
+    if(d2<bestD2){bestD2=d2;bestI=i;}
+  }
+  const p=trackSamples[bestI],n=trackNormals[bestI];
+  const dx=x-p.x,dz=z-p.z;
+  const signed=dx*n.x+dz*n.z;
+  const distance=Math.sqrt(bestD2);
+  return {on:distance<=halfTrack,distance,signed,progress:bestI/TRACK_SAMPLES,index:bestI};
 }
 function showMini(text){mini.textContent=text;mini.classList.add('show');clearTimeout(showMini.t);showMini.t=setTimeout(()=>mini.classList.remove('show'),650);}
 function updateBoostUI(){
@@ -139,7 +251,7 @@ function cancelDriftReward(){
 }
 function useBoost(){
   if(raceState!=='racing'||boostStock<=0)return;
-  boostStock-=1;boostTimer=1.05;
+  boostStock-=1; boostTimer=1.05;
   const f=new THREE.Vector3(Math.sin(yaw),0,Math.cos(yaw));
   velocity.addScaledVector(f,3.2);
   showMini('BOOST!');
@@ -149,7 +261,10 @@ function bindHold(id,key){
   const el=document.querySelector(id);
   const on=e=>{e.preventDefault();input[key]=true;el.classList.add('on');};
   const off=e=>{e.preventDefault();input[key]=false;el.classList.remove('on');};
-  el.addEventListener('pointerdown',on); el.addEventListener('pointerup',off); el.addEventListener('pointercancel',off); el.addEventListener('pointerleave',off);
+  el.addEventListener('pointerdown',on);
+  el.addEventListener('pointerup',off);
+  el.addEventListener('pointercancel',off);
+  el.addEventListener('pointerleave',off);
 }
 bindHold('#left','left');bindHold('#right','right');bindHold('#gas','gas');bindHold('#drift','drift');
 boostBtn.addEventListener('pointerdown',e=>{e.preventDefault();useBoost();});
@@ -170,11 +285,27 @@ addEventListener('keyup',e=>{
 });
 
 function resetRace(){
-  player.position.set(0,.02,-centerRZ); yaw=Math.PI/2; player.rotation.y=yaw; player.userData.visual.rotation.set(0,0,0); player.userData.visual.position.set(0,0,0);
-  velocity.set(0,0,0); boostTimer=0; wasDrifting=false; collisionCooldown=0; boostGauge=0; boostStock=0; driftPending=0; driftClean=true; currentDrifting=false;
-  cumulative=0; lastTheta=-Math.PI/2; raceState='countdown'; countdownStart=performance.now()/1000; raceStart=0; finish.classList.remove('show');
+  const s=sampleTrack(0,0);
+  player.position.copy(s.p).setY(.02);
+  yaw=Math.atan2(s.tangent.x,s.tangent.z);
+  player.rotation.y=yaw;
+  player.userData.visual.rotation.set(0,0,0);
+  player.userData.visual.position.set(0,0,0);
+  velocity.set(0,0,0);
+  boostTimer=0; wasDrifting=false; collisionCooldown=0;
+  boostGauge=0; boostStock=0; driftPending=0; driftClean=true; currentDrifting=false;
+  playerProgress=0; lastTrackProgress=0;
+  raceState='countdown'; countdownStart=performance.now()/1000; raceStart=0;
+  finish.classList.remove('show');
   ais.forEach((a,i)=>{
-    a.userData.progress=aiDefs[i].offset; a.userData.lapProgress=aiDefs[i].offset; a.userData.impactOffset.set(0,0,0); a.userData.speedPenalty=0;
+    a.userData.progress=aiDefs[i].offset;
+    a.userData.lapProgress=aiDefs[i].offset;
+    a.userData.impactOffset.set(0,0,0);
+    a.userData.speedPenalty=0;
+    const as=sampleTrack(a.userData.progress,aiDefs[i].lane);
+    a.position.copy(as.p).setY(.02);
+    a.rotation.y=Math.atan2(as.tangent.x,as.tangent.z);
+    a.userData.prevPos.copy(a.position);
   });
   updateBoostUI();
 }
@@ -185,20 +316,27 @@ function updateCountdown(now){
   if(raceState!=='countdown')return;
   const e=now-countdownStart;
   let text='';
-  if(e<1)text='3';else if(e<2)text='2';else if(e<3)text='1';else if(e<3.7)text='GO!';
+  if(e<1)text='3'; else if(e<2)text='2'; else if(e<3)text='1'; else if(e<3.7)text='GO!';
   else{msg.classList.remove('show');raceState='racing';raceStart=now;return;}
   msg.textContent=text;msg.classList.add('show');
+}
+
+function updatePlayerProgress(trackInfo){
+  let delta=trackInfo.progress-lastTrackProgress;
+  if(delta>0.5)delta-=1;
+  if(delta<-0.5)delta+=1;
+  if(Math.abs(delta)<.08)playerProgress+=delta;
+  lastTrackProgress=trackInfo.progress;
 }
 
 function updatePlayer(dt,now){
   const active=raceState==='racing';
   const steer=(input.left?1:0)+(input.right?-1:0);
   const speedNow=velocity.length();
-  const t=trackState(player.position.x,player.position.z);
+  const t=nearestTrackState(player.position.x,player.position.z);
   const drifting=active&&input.drift&&Math.abs(steer)>.1&&speedNow>3.2;
 
   let forward=new THREE.Vector3(Math.sin(yaw),0,Math.cos(yaw));
-
   if(active&&input.gas){
     const accel=boostTimer>0?12.5:7.8;
     velocity.addScaledVector(forward,accel*dt);
@@ -241,11 +379,12 @@ function updatePlayer(dt,now){
   if(!t.on)velocity.multiplyScalar(Math.max(.82,1-2.3*dt));
 
   player.position.addScaledVector(velocity,dt);
-
-  const after=trackState(player.position.x,player.position.z);
+  const after=nearestTrackState(player.position.x,player.position.z);
   if(!after.on&&currentDrifting)cancelDriftReward();
-  if(after.outer>1.55){velocity.multiplyScalar(.74);player.position.multiplyScalar(.992);cancelDriftReward();}
-  if(after.inner<.46){velocity.multiplyScalar(.72);player.position.multiplyScalar(1.006);cancelDriftReward();}
+  if(after.distance>halfTrack+2.6){
+    velocity.multiplyScalar(Math.max(.6,1-4.0*dt));
+    cancelDriftReward();
+  }
 
   player.rotation.y=yaw;
   const visual=player.userData.visual;
@@ -254,16 +393,17 @@ function updatePlayer(dt,now){
   visual.rotation.y=THREE.MathUtils.lerp(visual.rotation.y,drifting?steer*.12:0,.14);
   visual.position.y=Math.sin(now*19)*Math.min(velocity.length()/10,.05);
 
-  const theta=Math.atan2(player.position.z/centerRZ,player.position.x/centerRX);
-  const delta=normalizeAngle(theta-lastTheta);
-  if(Math.abs(delta)<.35)cumulative+=delta;
-  lastTheta=theta;
-  lapEl.textContent=`${THREE.MathUtils.clamp(Math.floor(Math.max(0,cumulative)/(Math.PI*2))+1,1,2)} / 2`;
+  if(active)updatePlayerProgress(after);
+  lapEl.textContent=`${THREE.MathUtils.clamp(Math.floor(Math.max(0,playerProgress))+1,1,2)} / 2`;
   speedEl.textContent=Math.round(velocity.length()*13.2);
 
-  if(active&&cumulative>=Math.PI*4){
-    raceState='finished'; velocity.multiplyScalar(.5);
-    const r=computeRank(); finishRank.textContent=`${r}위`; finishTime.textContent=formatTime(now-raceStart); finish.classList.add('show');
+  if(active&&playerProgress>=2){
+    raceState='finished';
+    velocity.multiplyScalar(.5);
+    const r=computeRank();
+    finishRank.textContent=`${r}위`;
+    finishTime.textContent=formatTime(now-raceStart);
+    finish.classList.add('show');
   }
 }
 
@@ -272,21 +412,19 @@ function updateAI(dt,now){
   for(const ai of ais){
     const d=ai.userData.def;
     if(active){
-      const wobble=1+Math.sin(now*.85+ai.userData.seed)*.035;
+      const wobble=1+Math.sin(now*.85+ai.userData.seed)*.028;
       ai.userData.speedPenalty=Math.max(0,ai.userData.speedPenalty-dt*.55);
       const speedScale=1-ai.userData.speedPenalty*.55;
-      ai.userData.progress+=(d.speed*wobble*speedScale/6.45)*dt;
+      ai.userData.progress+=(d.speed*wobble*speedScale/trackLength)*dt;
       ai.userData.lapProgress=ai.userData.progress;
     }
-    const a=-Math.PI/2+ai.userData.progress,rx=centerRX+d.lane,rz=centerRZ+d.lane*.45;
-    const base=new THREE.Vector3(rx*Math.cos(a),.02,rz*Math.sin(a));
+    const s=sampleTrack(ai.userData.progress,d.lane);
     ai.userData.impactOffset.multiplyScalar(Math.max(.84,1-4.2*dt));
-    const pos=base.clone().add(ai.userData.impactOffset);
+    const pos=s.p.clone().add(ai.userData.impactOffset).setY(.02);
     ai.userData.velocity.copy(pos).sub(ai.userData.prevPos).divideScalar(Math.max(dt,.001));
     ai.userData.prevPos.copy(pos);
     ai.position.copy(pos);
-    const tx=-rx*Math.sin(a),tz=rz*Math.cos(a);
-    ai.rotation.y=Math.atan2(tx,tz);
+    ai.rotation.y=Math.atan2(s.tangent.x,s.tangent.z);
     ai.userData.visual.rotation.z=THREE.MathUtils.lerp(ai.userData.visual.rotation.z,ai.userData.impactOffset.x*.11+Math.sin(now*2.2+ai.userData.seed)*.025,.2);
     ai.userData.visual.position.y=Math.sin(now*15+ai.userData.seed)*.025;
   }
@@ -312,11 +450,9 @@ function resolveCarCollisions(){
     if(collisionCooldown<=0 || closing>1.2){
       velocity.addScaledVector(normal,impact*.72);
       velocity.multiplyScalar(.72);
-
       const forward=new THREE.Vector3(Math.sin(yaw),0,Math.cos(yaw));
       const side=Math.sign(forward.x*normal.z-forward.z*normal.x)||1;
       yaw=normalizeAngle(yaw-side*(.10+Math.min(.22,impact*.018)));
-
       ai.userData.impactOffset.addScaledVector(normal,-Math.min(.48,.12+impact*.025));
       ai.userData.speedPenalty=Math.min(.75,ai.userData.speedPenalty+.36);
       collisionCooldown=.18;
@@ -327,7 +463,9 @@ function resolveCarCollisions(){
 }
 
 function computeRank(){
-  const p=Math.max(0,cumulative), vals=[p,...ais.map(a=>Math.max(0,a.userData.lapProgress))], sorted=[...vals].sort((a,b)=>b-a);
+  const p=Math.max(0,playerProgress);
+  const vals=[p,...ais.map(a=>Math.max(0,a.userData.lapProgress))];
+  const sorted=[...vals].sort((a,b)=>b-a);
   return sorted.indexOf(p)+1;
 }
 function updateRank(){rankEl.textContent=`${computeRank()} / 4`;}
@@ -346,8 +484,14 @@ function formatTime(sec){
   return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}.${String(cs).padStart(2,'0')}`;
 }
 
-function resize(){const w=stage.clientWidth,h=stage.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
-new ResizeObserver(resize).observe(stage); resize();
+function resize(){
+  const w=stage.clientWidth,h=stage.clientHeight;
+  renderer.setSize(w,h,false);
+  camera.aspect=w/h;
+  camera.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(stage);
+resize();
 
 const clock=new THREE.Clock();
 function animate(){
@@ -364,5 +508,4 @@ function animate(){
 }
 
 resetRace();
-ais.forEach(a=>a.userData.prevPos.copy(a.position));
 animate();
