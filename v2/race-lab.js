@@ -13,9 +13,9 @@ stage.appendChild(renderer.domElement);
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xcfeafa);
-scene.fog = new THREE.Fog(0xcfeafa, 38, 78);
+scene.fog = new THREE.Fog(0xcfeafa, 52, 105);
 
-const camera = new THREE.PerspectiveCamera(48, 1, .1, 160);
+const camera = new THREE.PerspectiveCamera(48, 1, .1, 220);
 camera.position.set(-4, 5.5, -8);
 
 scene.add(new THREE.HemisphereLight(0xffffff, 0xa7b88e, 2.3));
@@ -23,42 +23,45 @@ const sun = new THREE.DirectionalLight(0xfff5df, 4.1);
 sun.position.set(-10, 18, -8);
 sun.castShadow = true;
 sun.shadow.mapSize.set(2048, 2048);
-sun.shadow.camera.left = -28;
-sun.shadow.camera.right = 28;
-sun.shadow.camera.top = 28;
-sun.shadow.camera.bottom = -28;
+sun.shadow.camera.left = -38;
+sun.shadow.camera.right = 38;
+sun.shadow.camera.top = 38;
+sun.shadow.camera.bottom = -38;
 scene.add(sun);
 
 const grass = new THREE.Mesh(
-  new THREE.CircleGeometry(44, 128),
+  new THREE.CircleGeometry(62, 160),
   new THREE.MeshStandardMaterial({ color:0xb9d69a, roughness:.96 })
 );
 grass.rotation.x = -Math.PI / 2;
 grass.receiveShadow = true;
 scene.add(grass);
 
+// TEST TRACK V3: wide circuit with a long launch straight before the first corner.
+// The last point, start point, and first points are collinear so the race never opens into an immediate turn.
 const controlPoints = [
-  new THREE.Vector3(-9, 0, -5),
-  new THREE.Vector3(-3, 0, -5),
-  new THREE.Vector3(4, 0, -5),
-  new THREE.Vector3(9, 0, -3.2),
-  new THREE.Vector3(10, 0, .6),
-  new THREE.Vector3(8, 0, 3.4),
-  new THREE.Vector3(4.6, 0, 3.6),
-  new THREE.Vector3(2.8, 0, 6.2),
-  new THREE.Vector3(-2.4, 0, 6.5),
-  new THREE.Vector3(-7.2, 0, 5.2),
-  new THREE.Vector3(-10, 0, 2.2),
-  new THREE.Vector3(-8.8, 0, -.4),
-  new THREE.Vector3(-5.1, 0, .2),
-  new THREE.Vector3(-2.2, 0, -1.4),
-  new THREE.Vector3(-5.2, 0, -3.1),
-  new THREE.Vector3(-8.3, 0, -3.0)
+  new THREE.Vector3(-12, 0, -10),
+  new THREE.Vector3(-2, 0, -10),
+  new THREE.Vector3(10, 0, -10),
+  new THREE.Vector3(22, 0, -10),
+  new THREE.Vector3(27, 0, -6),
+  new THREE.Vector3(28, 0, 1),
+  new THREE.Vector3(25, 0, 8),
+  new THREE.Vector3(18, 0, 12),
+  new THREE.Vector3(11, 0, 9),
+  new THREE.Vector3(6, 0, 13),
+  new THREE.Vector3(-2, 0, 15),
+  new THREE.Vector3(-10, 0, 13),
+  new THREE.Vector3(-18, 0, 9),
+  new THREE.Vector3(-23, 0, 4),
+  new THREE.Vector3(-24, 0, -3),
+  new THREE.Vector3(-20, 0, -8),
+  new THREE.Vector3(-17, 0, -10)
 ];
 const trackCurve = new THREE.CatmullRomCurve3(controlPoints, true, 'centripetal', .45);
-const trackWidth = 3.35;
+const trackWidth = 6.2;
 const halfTrack = trackWidth * .5;
-const TRACK_SAMPLES = 360;
+const TRACK_SAMPLES = 520;
 const trackSamples = [];
 const trackNormals = [];
 for (let i = 0; i < TRACK_SAMPLES; i++) {
@@ -115,8 +118,8 @@ function makeBoundary(side) {
 scene.add(makeBoundary(1), makeBoundary(-1));
 
 const dashMat = new THREE.MeshStandardMaterial({ color:0xffefd0, roughness:.8 });
-for (let i = 0; i < 54; i += 2) {
-  const t = i / 54;
+for (let i = 0; i < 84; i += 2) {
+  const t = i / 84;
   const s = sampleTrack(t, 0);
   const dash = new THREE.Mesh(new THREE.BoxGeometry(.58, .025, .085), dashMat);
   dash.position.copy(s.p).setY(.07);
@@ -186,9 +189,9 @@ function makeRacer(color=0xf3e8cf,isPlayer=false){
 
 const player=makeRacer(0xf3e8cf,true);
 const aiDefs=[
-  {color:0xb95d48,speed:8.15,lane:-.5,offset:-.018},
-  {color:0xf48ab1,speed:8.45,lane:.1,offset:-.036},
-  {color:0xc99c62,speed:8.75,lane:.52,offset:-.054}
+  {color:0xb95d48,speed:8.15,lane:-1.55,offset:-.014},
+  {color:0xf48ab1,speed:8.45,lane:0,offset:-.028},
+  {color:0xc99c62,speed:8.75,lane:1.55,offset:-.042}
 ];
 const ais=aiDefs.map((d,i)=>{
   const o=makeRacer(d.color,false);
