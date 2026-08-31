@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#f7f4ed" />
+  <title>NEMO · Meta Loop Lab</title>
+  <link rel="stylesheet" href="./nemo-hub.css?v=1" />
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">NEMO · META LOOP LAB V1</p>
+        <h1>어떤 네모를 출전시킬까?</h1>
+        <p class="sub">디자인 확정 전, 네모 선택 → 종목 선택 → 보상 → 성장 흐름만 먼저 테스트합니다.</p>
+      </div>
+      <div class="wallet">COIN <b id="coin">0</b></div>
+    </header>
+
+    <section class="panel">
+      <div class="section-title">
+        <div>
+          <span>01</span>
+          <h2>네모 선택</h2>
+        </div>
+        <p>모든 종목에 참가할 수 있지만, 잘하는 분야가 다릅니다.</p>
+      </div>
+      <div id="nemoList" class="nemo-list" aria-label="네모 선택"></div>
+    </section>
+
+    <section class="panel selected-panel">
+      <div class="selected-head">
+        <div id="selectedIcon" class="selected-icon"></div>
+        <div>
+          <p class="micro">CURRENT NEMO</p>
+          <h2 id="selectedName">-</h2>
+          <p id="selectedDesc" class="selected-desc">-</p>
+        </div>
+      </div>
+      <div class="growth">
+        <div class="growth-row"><span>LEVEL</span><strong>Lv.<b id="level">1</b></strong></div>
+        <div class="xp-track"><div id="xpFill" class="xp-fill"></div></div>
+        <div class="growth-row minor"><span>EXP</span><span><b id="xp">0</b> / <b id="xpNeed">100</b></span></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="section-title">
+        <div>
+          <span>02</span>
+          <h2>종목 선택</h2>
+        </div>
+        <p>지금은 기존에 만든 두 종목을 그대로 연결합니다.</p>
+      </div>
+      <div class="events">
+        <article class="event-card race">
+          <div>
+            <p class="event-kicker">RACE</p>
+            <h3>레이싱</h3>
+            <p id="raceFit">적성 계산 중...</p>
+          </div>
+          <button id="goRace" type="button">레이싱 출전</button>
+        </article>
+        <article class="event-card run">
+          <div>
+            <p class="event-kicker">100M</p>
+            <h3>100m 달리기</h3>
+            <p id="runFit">적성 계산 중...</p>
+          </div>
+          <button id="goRun" type="button">달리기 출전</button>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel dev-panel">
+      <div class="section-title">
+        <div>
+          <span>03</span>
+          <h2>보상·성장 테스트</h2>
+        </div>
+        <p>실제 경기 결과 연결 전까지 임시 버튼으로 성장 루프만 확인합니다.</p>
+      </div>
+      <div class="reward-buttons">
+        <button type="button" data-reward="win">1위 보상</button>
+        <button type="button" data-reward="finish">완주 보상</button>
+        <button id="resetMeta" class="ghost" type="button">성장 초기화</button>
+      </div>
+      <p id="toast" class="toast" aria-live="polite"></p>
+    </section>
+
+    <p class="note">V1 목표: 게임을 늘리는 것이 아니라, “네모를 고르고 → 출전하고 → 보상받아 키우는 이유가 생기는가”만 확인.</p>
+  </main>
+  <script src="./nemo-hub.js?v=1"></script>
+</body>
+</html>
