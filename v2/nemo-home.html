@@ -6,6 +6,7 @@
   <meta name="theme-color" content="#f6efe5" />
   <title>NEMO · Main Home Lab</title>
   <link rel="stylesheet" href="./nemo-home.css?v=1" />
+  <link rel="stylesheet" href="./meta-loop.css?v=1" />
 </head>
 <body>
   <main class="app-shell">
@@ -58,6 +59,7 @@
         <strong id="power">1,240</strong>
         <div class="xp-bar"><i id="xpFill"></i></div>
         <small>EXP <b id="xp">18</b> / <b id="xpNeed">100</b></small>
+        <small id="lastResult" class="last-result" hidden></small>
       </div>
 
       <div class="side-actions">
@@ -84,10 +86,10 @@
     <button class="sheet-backdrop" data-close="play" aria-label="닫기"></button>
     <section class="sheet-card">
       <div class="sheet-head"><div><p>PLAY</p><h2>어디서 놀까?</h2></div><button data-close="play" type="button">×</button></div>
-      <a class="mode-card race" href="./race-lab.html?v=9">
+      <a id="goRace" class="mode-card race" href="./race-lab.html?v=9">
         <div class="mode-icon">🏁</div><div><strong>레이싱</strong><span>드리프트 · 충돌 · 부스트</span></div><b>›</b>
       </a>
-      <a class="mode-card run" href="../index.html?v=110">
+      <a id="goRun" class="mode-card run" href="../index.html?v=110">
         <div class="mode-icon">🏃</div><div><strong>100m 달리기</strong><span>리듬 · 스타트 · 스퍼트</span></div><b>›</b>
       </a>
       <button class="mode-card locked" type="button"><div class="mode-icon">?</div><div><strong>다음 경기</strong><span>아직 만들지 않음</span></div><b>🔒</b></button>
@@ -115,6 +117,6 @@
   </div>
 
   <div id="toast" class="toast" aria-live="polite"></div>
-  <script src="./nemo-home.js?v=1"></script>
+  <script type="module" src="./nemo-home.js?v=2"></script>
 </body>
 </html>

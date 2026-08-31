@@ -13,7 +13,8 @@
     }
   }
   </script>
-  <link rel="stylesheet" href="./race-lab.css?v=8" />
+  <link rel="stylesheet" href="./race-lab.css?v=8-meta1" />
+  <link rel="stylesheet" href="./meta-loop.css?v=1" />
 </head>
 <body>
   <main class="shell">
@@ -30,11 +31,11 @@
         <div class="pad" aria-label="방향 조작"><button id="left" class="ctrl" type="button" aria-label="왼쪽">◀</button><button id="right" class="ctrl" type="button" aria-label="오른쪽">▶</button></div>
         <div class="actions"><button id="boost" class="ctrl boost" type="button" disabled>BOOST</button><button id="drift" class="ctrl drift" type="button">DRIFT</button><button id="gas" class="ctrl gas" type="button">가속</button></div>
       </div>
-      <div id="finish" class="finish"><div class="finish-card"><p>FINISH</p><h2 id="finishRank">1위</h2><strong id="finishTime">00:00.00</strong><button id="retry" type="button">한 판 더</button></div></div>
+      <div id="finish" class="finish"><div class="finish-card"><p>FINISH · <span id="finishNemo">슈가</span></p><h2 id="finishRank">1위</h2><strong id="finishTime">00:00.00</strong><div class="meta-reward"><span>🪙 +<b id="finishCoin">0</b></span><span>EXP +<b id="finishExp">0</b></span></div><div class="finish-actions"><button id="retry" type="button">한 판 더</button><button id="finishHome" class="home" type="button">HOME으로</button></div></div></div>
     </section>
     <p class="note">V9: BOOST는 길게 누르는 방식이 아니라 한 번 탭하면 약 1.4초 자동 발동. 초기 가속·최고속·전용 추진력·카메라 FOV/거리·배기 불꽃을 키워 체감이 확실하도록 조정. V8의 넓은 조작 버튼과 기존 드리프트 게이지는 유지.</p>
   </main>
 
-  <script type="module" src="./race-lab.js?v=9"></script>
+  <script type="module" src="./race-lab.js?v=9-meta1"></script>
 </body>
 </html>
