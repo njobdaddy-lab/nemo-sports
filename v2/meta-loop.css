@@ -1,0 +1,24 @@
+.last-result {
+  display: block;
+  margin-top: 8px;
+  padding-top: 7px;
+  border-top: 1px solid #ddd3c5;
+  line-height: 1.35;
+  color: #735d47 !important;
+}
+
+.meta-reward {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.meta-reward span {
+  border-radius: 12px;
+  background: #edf5fb;
+  padding: 9px 7px;
+  color: #385b75;
+  font-size: 12px;
+  font-weight: 900;
+}

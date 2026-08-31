@@ -1,5 +1,10 @@
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { awardResult, getSelectedNemo, setSelectedNemo } from './core/meta-state.js';
+
+const entryParams = new URLSearchParams(location.search);
+const requestedNemoId = entryParams.get('nemo');
+if (requestedNemoId) setSelectedNemo(requestedNemoId);
 
 const stage = document.querySelector('#stage');
 const renderer = new THREE.WebGLRenderer({ antialias:true, powerPreference:'high-performance' });
@@ -231,10 +236,11 @@ const input={left:false,right:false,gas:false,drift:false};
 const velocity=new THREE.Vector3();
 let yaw=startAngle, boostTimer=0, wasDrifting=false, collisionCooldown=0;
 let boostGauge=0, boostStock=0, driftPending=0, driftClean=true, currentDrifting=false;
-let playerProgress=0, lastTrackProgress=0, raceState='countdown', raceStart=0, countdownStart=performance.now()/1000;
+let playerProgress=0, lastTrackProgress=0, raceState='countdown', raceStart=0, countdownStart=performance.now()/1000, raceRewarded=false;
 
 const lapEl=document.querySelector('#lap'),rankEl=document.querySelector('#rank'),speedEl=document.querySelector('#speed');
 const msg=document.querySelector('#message'),mini=document.querySelector('#mini'),finish=document.querySelector('#finish'),finishRank=document.querySelector('#finishRank'),finishTime=document.querySelector('#finishTime');
+const finishNemo=document.querySelector('#finishNemo'),finishCoin=document.querySelector('#finishCoin'),finishExp=document.querySelector('#finishExp');
 const boostBtn=document.querySelector('#boost'),boostPctEl=document.querySelector('#boostPct'),boostStockEl=document.querySelector('#boostStock'),boostFillEl=document.querySelector('#boostFill'),boostPendingEl=document.querySelector('#boostPending');
 
 function normalizeAngle(a){while(a>Math.PI)a-=Math.PI*2;while(a<-Math.PI)a+=Math.PI*2;return a;}
@@ -323,7 +329,7 @@ function resetRace(){
   boostTimer=0; wasDrifting=false; collisionCooldown=0;
   boostGauge=0; boostStock=0; driftPending=0; driftClean=true; currentDrifting=false;
   playerProgress=0; lastTrackProgress=0;
-  raceState='countdown'; countdownStart=performance.now()/1000; raceStart=0;
+  raceState='countdown'; countdownStart=performance.now()/1000; raceStart=0; raceRewarded=false;
   finish.classList.remove('show');
   ais.forEach((a,i)=>{
     a.userData.progress=aiDefs[i].offset;
@@ -341,6 +347,34 @@ function resetRace(){
 }
 document.querySelector('#retry').addEventListener('click',resetRace);
 document.querySelector('#resetTop').addEventListener('click',resetRace);
+document.querySelector('#finishHome').addEventListener('click',()=>{
+  location.href='./nemo-home.html?reward=1';
+});
+
+function completeRace(rank,elapsed){
+  if(raceRewarded)return;
+  raceRewarded=true;
+  const rewardByRank={
+    1:{coin:100,exp:70},
+    2:{coin:70,exp:50},
+    3:{coin:50,exp:35},
+    4:{coin:35,exp:25}
+  };
+  const reward=rewardByRank[rank]||rewardByRank[4];
+  const nemo=getSelectedNemo();
+  awardResult({
+    event:'race',
+    rank,
+    record:formatTime(elapsed),
+    nemoId:nemo.id,
+    nemoName:nemo.name,
+    coin:reward.coin,
+    exp:reward.exp
+  });
+  finishNemo.textContent=nemo.name;
+  finishCoin.textContent=reward.coin;
+  finishExp.textContent=reward.exp;
+}
 
 function updateCountdown(now){
   if(raceState!=='countdown')return;
@@ -443,8 +477,10 @@ function updatePlayer(dt,now){
     raceState='finished';
     velocity.multiplyScalar(.5);
     const r=computeRank();
+    const elapsed=now-raceStart;
     finishRank.textContent=`${r}위`;
-    finishTime.textContent=formatTime(now-raceStart);
+    finishTime.textContent=formatTime(elapsed);
+    completeRace(r,elapsed);
     finish.classList.add('show');
   }
 }
