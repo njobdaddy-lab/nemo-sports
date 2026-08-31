@@ -104,8 +104,12 @@ function buildRibbon(width, y, material) {
   return mesh;
 }
 
+const ROAD_Y = .03;
+const WHEEL_CENTER_Y = .36;
+const WHEEL_RADIUS = .19;
+const CAR_BASE_Y = ROAD_Y - (WHEEL_CENTER_Y - WHEEL_RADIUS);
 const roadMat = new THREE.MeshStandardMaterial({ color:0x59616b, roughness:.9, side:THREE.DoubleSide });
-const road = buildRibbon(trackWidth, .03, roadMat);
+const road = buildRibbon(trackWidth, ROAD_Y, roadMat);
 scene.add(road);
 
 function makeBoundary(side) {
@@ -170,9 +174,9 @@ function makeRacer(color=0xf3e8cf,isPlayer=false){
     const shine=mesh(new THREE.SphereGeometry(.022,10,8),mats.white,false); shine.position.set(x-.025,.115,.052); face.add(shine);
   }
   const mouth=mesh(new THREE.TorusGeometry(.09,.018,8,24,Math.PI),mats.black,false); mouth.rotation.z=Math.PI; mouth.position.set(0,-.12,.03); face.add(mouth);
-  const wheelGeo=new THREE.CylinderGeometry(.19,.19,.16,18);
+  const wheelGeo=new THREE.CylinderGeometry(WHEEL_RADIUS,WHEEL_RADIUS,.16,18);
   for(const sx of[-1,1]) for(const sz of[-1,1]){
-    const wheel=mesh(wheelGeo,mats.wheel); wheel.rotation.z=Math.PI/2; wheel.position.set(sx*.58,.36,sz*.42); visual.add(wheel);
+    const wheel=mesh(wheelGeo,mats.wheel); wheel.rotation.z=Math.PI/2; wheel.position.set(sx*.58,WHEEL_CENTER_Y,sz*.42); visual.add(wheel);
     const rim=mesh(new THREE.CylinderGeometry(.095,.095,.164,18),mats.rim); rim.rotation.z=Math.PI/2; rim.position.copy(wheel.position); visual.add(rim);
   }
   for(const x of[-.25,.25]){
@@ -289,7 +293,7 @@ addEventListener('keyup',e=>{
 
 function resetRace(){
   const s=sampleTrack(0,0);
-  player.position.copy(s.p).setY(.02);
+  player.position.copy(s.p).setY(CAR_BASE_Y);
   yaw=Math.atan2(s.tangent.x,s.tangent.z);
   player.rotation.y=yaw;
   player.userData.visual.rotation.set(0,0,0);
@@ -306,7 +310,7 @@ function resetRace(){
     a.userData.impactOffset.set(0,0,0);
     a.userData.speedPenalty=0;
     const as=sampleTrack(a.userData.progress,aiDefs[i].lane);
-    a.position.copy(as.p).setY(.02);
+    a.position.copy(as.p).setY(CAR_BASE_Y);
     a.rotation.y=Math.atan2(as.tangent.x,as.tangent.z);
     a.userData.prevPos.copy(a.position);
   });
@@ -382,6 +386,7 @@ function updatePlayer(dt,now){
   if(!t.on)velocity.multiplyScalar(Math.max(.82,1-2.3*dt));
 
   player.position.addScaledVector(velocity,dt);
+  player.position.y=CAR_BASE_Y;
   const after=nearestTrackState(player.position.x,player.position.z);
   if(!after.on&&currentDrifting)cancelDriftReward();
   if(after.distance>halfTrack+2.6){
@@ -394,7 +399,7 @@ function updatePlayer(dt,now){
   visual.rotation.z=THREE.MathUtils.lerp(visual.rotation.z,-steer*(drifting?.24:.09),.14);
   visual.rotation.x=THREE.MathUtils.lerp(visual.rotation.x,boostTimer>0?-.08:0,.12);
   visual.rotation.y=THREE.MathUtils.lerp(visual.rotation.y,drifting?steer*.12:0,.14);
-  visual.position.y=Math.sin(now*19)*Math.min(velocity.length()/10,.05);
+  visual.position.y=Math.sin(now*19)*Math.min(velocity.length()/10,.012);
 
   if(active)updatePlayerProgress(after);
   lapEl.textContent=`${THREE.MathUtils.clamp(Math.floor(Math.max(0,playerProgress))+1,1,2)} / 2`;
@@ -423,13 +428,13 @@ function updateAI(dt,now){
     }
     const s=sampleTrack(ai.userData.progress,d.lane);
     ai.userData.impactOffset.multiplyScalar(Math.max(.84,1-4.2*dt));
-    const pos=s.p.clone().add(ai.userData.impactOffset).setY(.02);
+    const pos=s.p.clone().add(ai.userData.impactOffset).setY(CAR_BASE_Y);
     ai.userData.velocity.copy(pos).sub(ai.userData.prevPos).divideScalar(Math.max(dt,.001));
     ai.userData.prevPos.copy(pos);
     ai.position.copy(pos);
     ai.rotation.y=Math.atan2(s.tangent.x,s.tangent.z);
     ai.userData.visual.rotation.z=THREE.MathUtils.lerp(ai.userData.visual.rotation.z,ai.userData.impactOffset.x*.11+Math.sin(now*2.2+ai.userData.seed)*.025,.2);
-    ai.userData.visual.position.y=Math.sin(now*15+ai.userData.seed)*.025;
+    ai.userData.visual.position.y=Math.sin(now*15+ai.userData.seed)*.008;
   }
 }
 
