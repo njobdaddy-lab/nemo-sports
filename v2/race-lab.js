@@ -159,7 +159,9 @@ const mats = {
   rim:new THREE.MeshStandardMaterial({color:0xcbd4dc,roughness:.3,metalness:.6}),
   chrome:new THREE.MeshStandardMaterial({color:0x88939c,roughness:.25,metalness:.8}),
   eye:new THREE.MeshPhysicalMaterial({color:0x090a0d,roughness:.12,clearcoat:.75}),
-  white:new THREE.MeshBasicMaterial({color:0xffffff})
+  white:new THREE.MeshBasicMaterial({color:0xffffff}),
+  boostOuter:new THREE.MeshBasicMaterial({color:0x55d9ff,transparent:true,opacity:.82,depthWrite:false}),
+  boostInner:new THREE.MeshBasicMaterial({color:0xfff3ad,transparent:true,opacity:.94,depthWrite:false})
 };
 function mesh(g,m,c=true){const o=new THREE.Mesh(g,m);o.castShadow=c;o.receiveShadow=c;return o;}
 
@@ -179,12 +181,29 @@ function makeRacer(color=0xf3e8cf,isPlayer=false){
     const wheel=mesh(wheelGeo,mats.wheel); wheel.rotation.z=Math.PI/2; wheel.position.set(sx*.58,WHEEL_CENTER_Y,sz*.42); visual.add(wheel);
     const rim=mesh(new THREE.CylinderGeometry(.095,.095,.164,18),mats.rim); rim.rotation.z=Math.PI/2; rim.position.copy(wheel.position); visual.add(rim);
   }
+  const boostFlames=[];
   for(const x of[-.25,.25]){
     const pipe=mesh(new THREE.CylinderGeometry(.07,.09,.34,14),mats.chrome);
     pipe.rotation.x=Math.PI/2; pipe.position.set(x,.52,-.78); visual.add(pipe);
+    if(isPlayer){
+      const flameGroup=new THREE.Group();
+      flameGroup.position.set(x,.52,-1.0);
+      flameGroup.visible=false;
+      const outer=mesh(new THREE.ConeGeometry(.105,.68,12),mats.boostOuter,false);
+      outer.rotation.x=-Math.PI/2;
+      outer.position.z=-.18;
+      flameGroup.add(outer);
+      const inner=mesh(new THREE.ConeGeometry(.055,.43,10),mats.boostInner,false);
+      inner.rotation.x=-Math.PI/2;
+      inner.position.z=-.08;
+      flameGroup.add(inner);
+      visual.add(flameGroup);
+      boostFlames.push(flameGroup);
+    }
   }
   const spoiler=mesh(new RoundedBoxGeometry(.72,.08,.12,4,.03),mats.black); spoiler.position.set(0,1.18,-.66); visual.add(spoiler);
   root.userData.visual=visual;
+  root.userData.boostFlames=boostFlames;
   root.userData.impactOffset=new THREE.Vector3();
   root.userData.speedPenalty=0;
   scene.add(root);
@@ -258,9 +277,10 @@ function cancelDriftReward(){
 }
 function useBoost(){
   if(raceState!=='racing'||boostStock<=0)return;
-  boostStock-=1; boostTimer=1.05;
+  boostStock-=1;
+  boostTimer=1.4;
   const f=new THREE.Vector3(Math.sin(yaw),0,Math.cos(yaw));
-  velocity.addScaledVector(f,3.2);
+  velocity.addScaledVector(f,4.4);
   showMini('BOOST!');
   updateBoostUI();
 }
@@ -298,6 +318,7 @@ function resetRace(){
   player.rotation.y=yaw;
   player.userData.visual.rotation.set(0,0,0);
   player.userData.visual.position.set(0,0,0);
+  for(const flame of player.userData.boostFlames)flame.visible=false;
   velocity.set(0,0,0);
   boostTimer=0; wasDrifting=false; collisionCooldown=0;
   boostGauge=0; boostStock=0; driftPending=0; driftClean=true; currentDrifting=false;
@@ -314,6 +335,8 @@ function resetRace(){
     a.rotation.y=Math.atan2(as.tangent.x,as.tangent.z);
     a.userData.prevPos.copy(a.position);
   });
+  camera.fov=48;
+  camera.updateProjectionMatrix();
   updateBoostUI();
 }
 document.querySelector('#retry').addEventListener('click',resetRace);
@@ -345,8 +368,10 @@ function updatePlayer(dt,now){
 
   let forward=new THREE.Vector3(Math.sin(yaw),0,Math.cos(yaw));
   if(active&&input.gas){
-    const accel=boostTimer>0?12.5:7.8;
-    velocity.addScaledVector(forward,accel*dt);
+    velocity.addScaledVector(forward,7.8*dt);
+  }
+  if(active&&boostTimer>0){
+    velocity.addScaledVector(forward,7.0*dt);
   }
 
   const drag=t.on?(input.gas?.55:1.65):3.8;
@@ -381,7 +406,7 @@ function updatePlayer(dt,now){
   if(boostTimer>0)boostTimer=Math.max(0,boostTimer-dt);
   if(collisionCooldown>0)collisionCooldown=Math.max(0,collisionCooldown-dt);
 
-  const cap=boostTimer>0?14.2:(t.on?10.8:4.7);
+  const cap=boostTimer>0?15.8:(t.on?10.8:4.7);
   if(velocity.length()>cap)velocity.setLength(cap);
   if(!t.on)velocity.multiplyScalar(Math.max(.82,1-2.3*dt));
 
@@ -396,10 +421,19 @@ function updatePlayer(dt,now){
 
   player.rotation.y=yaw;
   const visual=player.userData.visual;
+  const boostActive=boostTimer>0;
   visual.rotation.z=THREE.MathUtils.lerp(visual.rotation.z,-steer*(drifting?.24:.09),.14);
-  visual.rotation.x=THREE.MathUtils.lerp(visual.rotation.x,boostTimer>0?-.08:0,.12);
+  visual.rotation.x=THREE.MathUtils.lerp(visual.rotation.x,boostActive?-.11:0,.12);
   visual.rotation.y=THREE.MathUtils.lerp(visual.rotation.y,drifting?steer*.12:0,.14);
   visual.position.y=Math.sin(now*19)*Math.min(velocity.length()/10,.012);
+  for(let i=0;i<player.userData.boostFlames.length;i++){
+    const flame=player.userData.boostFlames[i];
+    flame.visible=boostActive;
+    if(boostActive){
+      const pulse=1+Math.sin(now*58+i*1.7)*.14;
+      flame.scale.set(pulse,pulse,.92+Math.min(velocity.length()/16,.32));
+    }
+  }
 
   if(active)updatePlayerProgress(after);
   lapEl.textContent=`${THREE.MathUtils.clamp(Math.floor(Math.max(0,playerProgress))+1,1,2)} / 2`;
@@ -481,10 +515,15 @@ function updateRank(){rankEl.textContent=`${computeRank()} / 4`;}
 function updateCamera(dt){
   const f=new THREE.Vector3(Math.sin(yaw),0,Math.cos(yaw));
   const speedNow=velocity.length();
-  const desired=player.position.clone().addScaledVector(f,-6.2-Math.min(1.0,speedNow*.045)).add(new THREE.Vector3(0,4.2,0));
+  const boostActive=boostTimer>0;
+  const boostPullback=boostActive?1.35:0;
+  const desired=player.position.clone().addScaledVector(f,-6.2-Math.min(1.0,speedNow*.045)-boostPullback).add(new THREE.Vector3(0,4.2,0));
   const alpha=1-Math.pow(.001,dt);
   camera.position.lerp(desired,alpha);
-  camera.lookAt(player.position.clone().addScaledVector(f,3.1).add(new THREE.Vector3(0,.8,0)));
+  const targetFov=boostActive?55:48;
+  camera.fov=THREE.MathUtils.lerp(camera.fov,targetFov,1-Math.pow(.025,dt));
+  camera.updateProjectionMatrix();
+  camera.lookAt(player.position.clone().addScaledVector(f,3.1+(boostActive?.65:0)).add(new THREE.Vector3(0,.8,0)));
 }
 
 function formatTime(sec){
